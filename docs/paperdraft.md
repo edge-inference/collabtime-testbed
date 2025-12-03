@@ -48,7 +48,7 @@ This is **NOT** sequential processing or unfair priority. It's a **tie-breaking 
 Fed1 sends: "Agent 1 claims Task X" at logical time T=100
 Fed2 sends: "Agent 2 claims Task X" at logical time T=100
 
-Both federates receive BOTH messages at T=100.
+Both federates receive BOTH messages at T=100.A
 Processing order: Fed1's message first, Fed2's second.
 
 Result:
@@ -276,7 +276,6 @@ Central (x86 Station):
 
 ## Future Work
 
-1. **Multi-device Deployment:** Test on actual Jetson hardware (TODO #6)
 2. **Performance Benchmarking:** Compare latency vs. ZooKeeper
 3. **Fault Tolerance:** Test federate crash/recovery
 4. **Scale Testing:** 3+ robots, larger task sets
