@@ -12,7 +12,9 @@ START_NODE=${2:-0}
 STEP_TIME_S=${3:-2.0}
 WORK_TIME_S=${4:-45.0}
 LF_FED_HOST="${LF_FED_HOST:-localhost}"
-LF_PORT=$((9000 + DEVICE_ID))
+# LF_FED_PORT (set by the centralized compose) points every robot at ONE shared
+# federate; unset -> per-robot federate port 9000+device_id (distributed).
+LF_PORT="${LF_FED_PORT:-$((9000 + DEVICE_ID))}"
 
 echo "=== Robot $DEVICE_ID ROS stack (federate at ${LF_FED_HOST}:${LF_PORT}) ==="
 source /ros2_ws/install/setup.bash

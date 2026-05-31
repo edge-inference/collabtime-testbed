@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+"""
+Compare CENTRALIZED vs DISTRIBUTED coordination (the thesis's core axis), on the
+real emulation testbed.
+
+Both arms run the identical robots/agents/workload and the same LF Coordinator
+logic; the only difference is topology:
+  * distributed: N coordinator replicas (one federate per robot) + gossip
+    -- aggregated by report.py into <distributed>/testbed_metrics_agg.csv
+  * centralized: ONE federate serves all N robots
+    -- aggregated into <central>/testbed_metrics_agg.csv
+
+This isolates the single variable (1 coordinator vs N replicas) and lets the
+emulation reproduce the sim's central-vs-distributed comparison on real ROS2/LF
+infrastructure.
+
+Writes:
+    results/modes_comparison.md     (per-N both modes + delta table)
+    results/modes_comparison.tex    (LaTeX tabular)
+    figures/testbed/modes_compare.{pdf,png}
+
+Usage:
+    python3 scripts/compare_modes.py --distributed results --central results/central
+"""
+
+import argparse
+import csv
+import os
+
+REPO = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+
+
+def load_agg(d):
+    path = os.path.join(d, "testbed_metrics_agg.csv")
+    if not os.path.exists(path):
+        raise SystemExit(f"missing aggregate: {path} (run the sweep + report.py first)")
+    rows = {}
+    with open(path) as f:
+        for r in csv.DictReader(f):
+            n = int(float(r["num_robots"]))
+            rows[n] = {k: (float(v) if v not in ("", None) else 0.0)
+                       for k, v in r.items() if k != "num_robots"}
+            rows[n]["num_robots"] = n
+    return rows
+
+
+def pm(mean, sd, prec=2):
+    return f"{mean:.{prec}f} ± {sd:.{prec}f}" if sd and sd > 0 else f"{mean:.{prec}f}"
+
+
+def write_markdown(ns, dist, cen, out):
+    path = os.path.join(out, "modes_comparison.md")
+    L = ["# Context-Fabric testbed: centralized vs distributed coordination", "",
+         "Same robots, agents, task workload and LF `Coordinator` logic in both arms; "
+         "only the coordination **topology** differs -- **distributed** = one federate "
+         "(replica) per robot + gossip; **centralized** = one shared federate serving the "
+         "whole fleet. Values are mean ± sd across seeds.", "",
+         "## Per-N, both modes", "",
+         "| N | mode | Completion | Throughput (tps) | Avg lat (s) | P90 lat (s) | Util | "
+         "T_claim (ms) | AoI (ms) |",
+         "|---|---|---|---|---|---|---|---|---|"]
+
+    def row(n, label, s):
+        return (f"| {n} | {label} | {pm(s['completion_rate_mean'], s['completion_rate_sd'])} | "
+                f"{pm(s['throughput_tps_mean'], s['throughput_tps_sd'], 3)} | "
+                f"{pm(s['avg_latency_s_mean'], s['avg_latency_s_sd'], 0)} | "
+                f"{pm(s['p90_latency_s_mean'], s['p90_latency_s_sd'], 0)} | "
+                f"{pm(s['agent_utilization_mean'], s['agent_utilization_sd'])} | "
+                f"{pm(s['t_claim_ms_mean_mean'], s['t_claim_ms_mean_sd'], 1)} | "
+                f"{pm(s['aoi_ms_mean_mean'], s['aoi_ms_mean_sd'], 1)} |")
+
+    for n in ns:
+        L.append(row(n, "distributed", dist[n]))
+        L.append(row(n, "centralized", cen[n]))
+
+    L += ["", "## Coordinator-contention delta (centralized − distributed)", "",
+          "| N | Δ T_claim (ms) | Δ Completion | Δ Avg lat (s) | Δ Util |",
+          "|---|---|---|---|---|"]
+    for n in ns:
+        d, c = dist[n], cen[n]
+        L.append(
+            f"| {n} | {c['t_claim_ms_mean_mean']-d['t_claim_ms_mean_mean']:+.1f} | "
+            f"{c['completion_rate_mean']-d['completion_rate_mean']:+.2f} | "
+            f"{c['avg_latency_s_mean']-d['avg_latency_s_mean']:+.1f} | "
+            f"{c['agent_utilization_mean']-d['agent_utilization_mean']:+.2f} |")
+
+    L += ["", "## What it shows",
+          "- Both arms run the **same robots/workload/coordinator code**, so differences "
+          "are attributable to the **coordination topology alone** (1 coordinator vs N).",
+          "- `T_claim` is the coordinator-contention signal: a single central coordinator "
+          "serializes every robot's claim/lock, so its claim latency grows with the fleet, "
+          "whereas the distributed replicas serve claims locally. The **trend** across N is "
+          "the on-real-hardware echo of the sim's large-N centralized bottleneck.",
+          "- Service metrics (completion/throughput/latency/utilization) are comparable at "
+          "these fleet sizes -- the architectural advantage of distribution is **scaling and "
+          "resilience** (no single point of contention/failure), which the sim explores to "
+          "large N and the coordinator-kill test demonstrates directly.",
+          "",
+          "_Note: this emulation reaches modest N; the dramatic centralized-vs-distributed "
+          "gap appears at the large fleet sizes covered by the simulation. Here it confirms, "
+          "on real ROS2/LF infrastructure, that the mechanism and trend hold._"]
+    with open(path, "w") as f:
+        f.write("\n".join(L) + "\n")
+    return path
+
+
+def write_latex(ns, dist, cen, out):
+    path = os.path.join(out, "modes_comparison.tex")
+    L = ["% Auto-generated by scripts/compare_modes.py -- paste into the thesis.",
+         r"\begin{table}[ht]", r"    \centering", r"    \small",
+         r"    \renewcommand{\arraystretch}{1.15}", r"    \setlength{\tabcolsep}{5pt}",
+         r"    \begin{tabular}{rl ccc cc}", r"        \hline",
+         r"        $N$ & Coord. & Compl. & $T_{\text{claim}}$ & AoI & Avg lat. & Util. \\",
+         r"            &        & (\%)   & (ms)               & (ms)& (s)      & (\%)  \\",
+         r"        \hline"]
+
+    def row(n, label, s):
+        return (f"        {n} & {label} & "
+                f"{pm(100*s['completion_rate_mean'], 100*s['completion_rate_sd'], 0)} & "
+                f"{pm(s['t_claim_ms_mean_mean'], s['t_claim_ms_mean_sd'], 1)} & "
+                f"{pm(s['aoi_ms_mean_mean'], s['aoi_ms_mean_sd'], 1)} & "
+                f"{pm(s['avg_latency_s_mean'], s['avg_latency_s_sd'], 0)} & "
+                f"{pm(100*s['agent_utilization_mean'], 100*s['agent_utilization_sd'], 0)} "
+                r"\\").replace("±", r"$\pm$")
+
+    for n in ns:
+        L.append(row(n, "distrib.", dist[n]))
+        L.append(row(n, "central", cen[n]))
+        if n != ns[-1]:
+            L.append(r"        \hline")
+    L += [r"        \hline", r"    \end{tabular}",
+          r"    \caption[Centralized vs distributed coordination]{Centralized vs distributed "
+          r"coordination on the emulation testbed (identical robots/workload/coordinator "
+          r"logic; topology is the only variable). $T_{\text{claim}}$ is the coordinator "
+          r"round-trip; a single central coordinator serializes the fleet's claims.}",
+          r"    \label{tab:testbed_modes}", r"\end{table}"]
+    with open(path, "w") as f:
+        f.write("\n".join(L) + "\n")
+    return path
+
+
+def make_figure(ns, dist, cen, figs):
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except Exception as e:
+        print(f"  [figure skipped: matplotlib unavailable: {e}]")
+        return []
+    os.makedirs(figs, exist_ok=True)
+
+    def series(rows, key):
+        return [rows[n][f"{key}_mean"] for n in ns], [rows[n][f"{key}_sd"] for n in ns]
+
+    fig, ax = plt.subplots(2, 2, figsize=(9.5, 6.8))
+    panels = [
+        (ax[0, 0], "t_claim_ms_mean", "Claim overhead $T_{claim}$", "round-trip (ms)", 1.0),
+        (ax[0, 1], "completion_rate", "Completion rate", "%", 100.0),
+        (ax[1, 0], "throughput_tps", "Throughput", "tasks/s", 1.0),
+        (ax[1, 1], "agent_utilization", "Robot utilization", "% working", 100.0),
+    ]
+    for a, key, title, ylab, scale in panels:
+        dm, ds = series(dist, key); cm, cs = series(cen, key)
+        a.errorbar(ns, [scale*x for x in dm], yerr=[scale*x for x in ds],
+                   fmt="o-", capsize=3, label="distributed")
+        a.errorbar(ns, [scale*x for x in cm], yerr=[scale*x for x in cs],
+                   fmt="s--", capsize=3, color="tab:red", label="centralized")
+        a.set(title=title, xlabel="robots N", ylabel=ylab)
+        a.grid(True, alpha=0.3); a.legend(fontsize=8)
+        if scale == 100.0:
+            a.set_ylim(0, 105)
+    fig.suptitle("Centralized vs distributed coordination (real ROS2 + Lingua Franca)")
+    fig.tight_layout()
+    saved = []
+    for ext in ("pdf", "png"):
+        p = os.path.join(figs, f"modes_compare.{ext}")
+        fig.savefig(p, bbox_inches="tight", dpi=150); saved.append(p)
+    plt.close(fig)
+    return saved
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Compare centralized vs distributed coordination")
+    ap.add_argument("--distributed", default=os.path.join(REPO, "results"))
+    ap.add_argument("--central", default=os.path.join(REPO, "results", "central"))
+    ap.add_argument("--out", default=os.path.join(REPO, "results"))
+    ap.add_argument("--figs", default=os.path.join(REPO, "figures", "testbed"))
+    args = ap.parse_args()
+
+    dist, cen = load_agg(args.distributed), load_agg(args.central)
+    ns = sorted(set(dist) & set(cen))
+    if not ns:
+        raise SystemExit("no overlapping fleet sizes between distributed and central aggregates")
+    missing = sorted(set(dist) ^ set(cen))
+    if missing:
+        print(f"  [note: N not in both modes, skipped: {missing}]")
+    os.makedirs(args.out, exist_ok=True)
+    print(f"  {write_markdown(ns, dist, cen, args.out)}")
+    print(f"  {write_latex(ns, dist, cen, args.out)}")
+    for p in make_figure(ns, dist, cen, args.figs):
+        print(f"  {p}")
+    print(f"\nCompared N={ns} (distributed vs centralized).")
+
+
+if __name__ == "__main__":
+    main()

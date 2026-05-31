@@ -332,7 +332,10 @@ class AgentNode(Node):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1.0)
             fed_host = os.environ.get('LF_FED_HOST', 'localhost')
-            sock.connect((fed_host, 9000 + self.device_id))
+            # LF_FED_PORT lets all robots target ONE shared federate (centralized
+            # baseline); unset -> per-robot federate (distributed, unchanged).
+            fed_port = int(os.environ.get('LF_FED_PORT', 9000 + self.device_id))
+            sock.connect((fed_host, fed_port))
 
             request = {
                 'type': 'acquire_node_lock',
@@ -363,7 +366,8 @@ class AgentNode(Node):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1.0)
             fed_host = os.environ.get('LF_FED_HOST', 'localhost')
-            sock.connect((fed_host, 9000 + self.device_id))
+            fed_port = int(os.environ.get('LF_FED_PORT', 9000 + self.device_id))
+            sock.connect((fed_host, fed_port))
 
             request = {
                 'type': 'release_node_lock',
