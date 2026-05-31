@@ -84,21 +84,35 @@ def write_markdown(ns, dist, cen, out):
             f"{c['avg_latency_s_mean']-d['avg_latency_s_mean']:+.1f} | "
             f"{c['agent_utilization_mean']-d['agent_utilization_mean']:+.2f} |")
 
+    parity = [n for n in ns if abs(cen[n]['completion_rate_mean'] - dist[n]['completion_rate_mean']) < 0.1
+              and dist[n]['t_claim_ms_mean_mean'] < 500 and cen[n]['t_claim_ms_mean_mean'] < 500]
+    dist_bad = [n for n in ns if dist[n]['t_claim_ms_mean_mean'] >= 500 or dist[n]['completion_rate_mean'] < 0.5]
+    cen_bad = [n for n in ns if cen[n]['t_claim_ms_mean_mean'] >= 500 or cen[n]['completion_rate_mean'] < 0.5]
     L += ["", "## What it shows",
-          "- Both arms run the **same robots/workload/coordinator code**, so differences "
-          "are attributable to the **coordination topology alone** (1 coordinator vs N).",
-          "- `T_claim` is the coordinator-contention signal: a single central coordinator "
-          "serializes every robot's claim/lock, so its claim latency grows with the fleet, "
-          "whereas the distributed replicas serve claims locally. The **trend** across N is "
-          "the on-real-hardware echo of the sim's large-N centralized bottleneck.",
-          "- Service metrics (completion/throughput/latency/utilization) are comparable at "
-          "these fleet sizes -- the architectural advantage of distribution is **scaling and "
-          "resilience** (no single point of contention/failure), which the sim explores to "
-          "large N and the coordinator-kill test demonstrates directly.",
-          "",
-          "_Note: this emulation reaches modest N; the dramatic centralized-vs-distributed "
-          "gap appears at the large fleet sizes covered by the simulation. Here it confirms, "
-          "on real ROS2/LF infrastructure, that the mechanism and trend hold._"]
+          "- Same robots / workload / `Coordinator` code in both arms, so differences are due to "
+          "coordination **topology alone** (1 central coordinator vs N replicas)."]
+    if parity:
+        L.append(f"- **Comparable at N = {', '.join(map(str, parity))}**: completion, latency and "
+                 f"claim overhead are within noise between the two -- at these fleet sizes the single "
+                 f"coordinator is not yet a bottleneck, and the distributed replicas add no measurable "
+                 f"penalty.")
+    for n in dist_bad:
+        L.append(f"- **At N = {n} the _distributed_ arm degrades** (completion "
+                 f"{dist[n]['completion_rate_mean']:.0%}, T_claim {dist[n]['t_claim_ms_mean_mean']:.0f} ms) "
+                 f"while centralized holds ({cen[n]['completion_rate_mean']:.0%}, "
+                 f"{cen[n]['t_claim_ms_mean_mean']:.0f} ms): Context-Fabric's all-to-all LF proposal mesh "
+                 f"(replicated, strongly-consistent task state) hits its centralized-RTI control-plane "
+                 f"limit here, which a single federate has no reason to. **On raw service metrics at "
+                 f"workstation scale, centralized matches or exceeds distributed.**")
+    for n in cen_bad:
+        L.append(f"- **At N = {n} the _centralized_ arm degrades** (completion "
+                 f"{cen[n]['completion_rate_mean']:.0%}, T_claim {cen[n]['t_claim_ms_mean_mean']:.0f} ms): "
+                 f"the single coordinator saturates; the distributed replicas do not.")
+    L += ["- **The distributed architecture's advantage is not small-N raw metrics** but (i) **fault "
+          "tolerance** -- no single point of failure (the coordinator-kill test), and (ii) **very-"
+          "large-N scaling**, where the central node finally saturates (the simulation regime, far "
+          "beyond one workstation). This emulation, capped at modest N, shows service-metric parity "
+          "and exposes a control-plane cost in the current distributed implementation."]
     with open(path, "w") as f:
         f.write("\n".join(L) + "\n")
     return path

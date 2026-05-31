@@ -74,6 +74,8 @@ for N in $SIZES; do
         mkdir -p "${OUTLOGS}/run_${CONFIG}_seed${SEED}"
         mv logs/claim_robot*.csv logs/aoi_robot*.csv "${OUTLOGS}/run_${CONFIG}_seed${SEED}/" 2>/dev/null || true
         docker compose -f "$LFC" -f "$ROSC" down -v --remove-orphans >/dev/null 2>&1 || true
+        # metrics writes the summary into the mounted logs/; move it under OUTLOGS for aggregation
+        mv "logs/summary_${CONFIG}_seed${SEED}.json" "logs/timeseries_${CONFIG}_seed${SEED}.csv" "$OUTLOGS/" 2>/dev/null || true
         echo "  done -> ${OUTLOGS}/summary_${CONFIG}_seed${SEED}.json"
     done
 done
