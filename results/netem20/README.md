@@ -11,15 +11,13 @@ Quantitative validation of the federated coordination architecture, emulating **
 
 | N | Completion | Throughput | Avg/P90 lat (s) | Util | T_claim (ms) | AoI (ms) |
 |---|---|---|---|---|---|---|
-| 2 | 0.78 ± 0.19 | 0.015 ± 0.003 | 98 ± 14/138 ± 53 | 0.37 ± 0.11 | 4.7 ± 1.2 | 1.0 ± 0.2 |
-| 4 | 0.97 ± 0.05 | 0.030 ± 0.005 | 93 ± 17/129 ± 38 | 0.35 ± 0.06 | 4.7 ± 0.4 | 1.2 ± 0.2 |
-| 8 | 0.98 ± 0.03 | 0.056 ± 0.010 | 85 ± 8/103 ± 13 | 0.32 ± 0.06 | 6.8 ± 0.4 | 1.9 ± 0.2 |
-| 16 | 0.30 ± 0.17 | 0.015 ± 0.010 | 72 ± 3/84 ± 13 | 0.09 ± 0.02 | 7130.1 ± 113.4 | 3.2 ± 0.1 |
+| 2 | 0.78 ± 0.19 | 0.015 ± 0.003 | 97 ± 15/134 ± 57 | 0.38 ± 0.10 | 25.8 ± 0.7 | 20.8 ± 0.2 |
+| 4 | 0.97 ± 0.05 | 0.030 ± 0.005 | 97 ± 18/131 ± 41 | 0.35 ± 0.06 | 27.4 ± 0.8 | 21.0 ± 0.1 |
+| 8 | 0.97 ± 0.05 | 0.055 ± 0.008 | 82 ± 8/108 ± 22 | 0.32 ± 0.05 | 28.4 ± 0.7 | 21.2 ± 0.1 |
 
 ## What the data shows
-- **Coordination stays cheap through N=8**: completion 98%, claim overhead 4.7->6.8 ms, AoI <= 1.9 ms (<< 300 ms gossip period) -- all far below the ~75 s task service time.
-- **Latency bounded** in this range (avg 85-98 s); throughput grows with the fleet.
-- **Centralized-coordination ceiling at N=16**: claim latency rises to ~7130 ms and completion falls to 30%. Under LF centralized coordination every federate's tag advance is gated by an all-to-all barrier, so logical time cannot track real time at this scale. The latency is tunable via the connection `after` grant-horizon, but the breakdown is the measured scaling frontier and motivates decentralized coordination (future work).
+- **Coordination stays cheap through N=8**: completion 97%, claim overhead 25.8->28.4 ms, AoI <= 21.2 ms (<< 300 ms gossip period) -- all far below the ~75 s task service time.
+- **Latency bounded** in this range (avg 82-97 s); throughput grows with the fleet.
 
 ## Artifacts
 - `results/testbed_metrics.csv` (per-seed) and `results/testbed_metrics_agg.csv` (per-N mean/sd)

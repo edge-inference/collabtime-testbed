@@ -269,6 +269,10 @@ def write_readme(agg, n_seeds):
     lat_means = [r["avg_latency_s_mean"] for r in agg]
     aoi_max = max(r["aoi_ms_mean_mean"] for r in agg)
     compl_min = min(r["completion_rate_mean"] for r in agg)
+    # Separate the cleanly-coordinating range from any centralized-coordination
+    # ceiling (claim latency blows up / completion collapses at large N).
+    clean = [r for r in agg if r["t_claim_ms_mean_mean"] < 500 and r["completion_rate_mean"] >= 0.6]
+    ceiling = [r for r in agg if r["t_claim_ms_mean_mean"] >= 500 or r["completion_rate_mean"] < 0.5]
     lines = [
         "# Context-Fabric testbed results",
         "",
@@ -296,16 +300,28 @@ def write_readme(agg, n_seeds):
             f"{pm(r['agent_utilization_mean'], r['agent_utilization_sd'])} | "
             f"{pm(r['t_claim_ms_mean_mean'], r['t_claim_ms_mean_sd'], 1)} | "
             f"{pm(r['aoi_ms_mean_mean'], r['aoi_ms_mean_sd'], 1)} |")
+    lines += ["", "## What the data shows"]
+    if clean:
+        cl_hi = clean[-1]
+        lines += [
+            f"- **Coordination stays cheap through N={cl_hi['num_robots']}**: completion "
+            f"{cl_hi['completion_rate_mean']:.0%}, claim overhead "
+            f"{clean[0]['t_claim_ms_mean_mean']:.1f}->{cl_hi['t_claim_ms_mean_mean']:.1f} ms, "
+            f"AoI <= {max(r['aoi_ms_mean_mean'] for r in clean):.1f} ms (<< 300 ms gossip period) -- "
+            f"all far below the ~75 s task service time.",
+            f"- **Latency bounded** in this range (avg "
+            f"{min(r['avg_latency_s_mean'] for r in clean):.0f}-"
+            f"{max(r['avg_latency_s_mean'] for r in clean):.0f} s); throughput grows with the fleet.",
+        ]
+    for c in ceiling:
+        lines.append(
+            f"- **Centralized-coordination ceiling at N={c['num_robots']}**: claim latency rises to "
+            f"~{c['t_claim_ms_mean_mean']:.0f} ms and completion falls to {c['completion_rate_mean']:.0%}. "
+            f"Under LF centralized coordination every federate's tag advance is gated by an all-to-all "
+            f"barrier, so logical time cannot track real time at this scale. The latency is tunable via "
+            f"the connection `after` grant-horizon, but the breakdown is the measured scaling frontier and "
+            f"motivates decentralized coordination (future work).")
     lines += [
-        "",
-        "## What the data shows",
-        f"- **Runs at every fleet size** (N={', '.join(str(r['num_robots']) for r in agg)}); "
-        f"completion {hi['completion_rate_mean']:.0%} at N={hi['num_robots']} (min {compl_min:.0%}).",
-        f"- **Throughput scales ~linearly** (x{thr_ratio:.1f} over a x{n_ratio:.0f} fleet), no completion collapse.",
-        f"- **Latency bounded** (avg {min(lat_means):.0f}-{max(lat_means):.0f} s).",
-        f"- **Claim overhead** grows {lo['t_claim_ms_mean_mean']:.1f} -> {hi['t_claim_ms_mean_mean']:.1f} ms "
-        f"across N (all-to-all replicated broadcast is ~O(N) per claim); far below ~75 s service time.",
-        f"- **AoI tiny** (mean <= {aoi_max:.0f} ms << 300 ms gossip period): bounded-staleness evidence.",
         "",
         "## Artifacts",
         "- `results/testbed_metrics.csv` (per-seed) and `results/testbed_metrics_agg.csv` (per-N mean/sd)",

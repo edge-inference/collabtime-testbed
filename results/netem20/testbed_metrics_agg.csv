@@ -1,0 +1,4 @@
+num_robots,n_seeds,completion_rate_mean,completion_rate_sd,throughput_tps_mean,throughput_tps_sd,avg_latency_s_mean,avg_latency_s_sd,p50_latency_s_mean,p50_latency_s_sd,p90_latency_s_mean,p90_latency_s_sd,p99_latency_s_mean,p99_latency_s_sd,agent_utilization_mean,agent_utilization_sd,t_claim_ms_mean_mean,t_claim_ms_mean_sd,aoi_ms_mean_mean,aoi_ms_mean_sd,tasks_completed_mean,tasks_completed_sd,tasks_created_mean,tasks_created_sd
+2,3,0.7836,0.1914,0.0154,0.0031,96.6233,15.1385,85.1733,6.6107,134.2633,56.7349,152.5267,79.4548,0.3802,0.0969,25.7967,0.6565,20.8333,0.1528,5.6667,1.1547,7.6667,3.0551
+4,3,0.9722,0.0481,0.0299,0.0054,96.76,18.1985,88.99,12.68,131.2967,41.137,149.15,51.1033,0.3452,0.0626,27.38,0.7641,21.0333,0.1155,11.0,2.0,11.3333,2.0817
+8,3,0.9722,0.0481,0.0551,0.0078,81.9233,8.2831,80.6433,3.1128,107.64,21.8656,125.7467,32.3134,0.3223,0.0532,28.4267,0.7433,21.2333,0.0577,20.3333,2.8868,21.0,3.6056
