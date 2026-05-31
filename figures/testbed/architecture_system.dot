@@ -1,0 +1,58 @@
+// Context-Fabric testbed — system architecture (thesis figure).
+// Each robot (ROS app + coordination-microservice federate) is a bounded box;
+// both are separate containers with their own IP on the Docker bridge "lf".
+// Layers: robot apps (top) -> federates (middle) -> RTI (bottom).
+// Render:  dot -Tpng architecture_system.dot -o architecture_system.png
+digraph testbed {
+  rankdir=TB; bgcolor="white"; fontname="Helvetica";
+  nodesep=0.55; ranksep=0.65; compound=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.18,0.12", penwidth=1.1, width=1.7, fixedsize=false];
+  edge [fontname="Helvetica", fontsize=9, color="#546e7a"];
+
+  subgraph cluster_lf {
+    color="#b0bec5"; style="rounded,dashed"; penwidth=1.2; label="";
+
+    subgraph cluster_r1 {
+      label="robot 1"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      a1 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      f1 [label="federate", fillcolor="#bbdefb"];
+      a1 -> f1 [color="#1565c0"];
+    }
+    subgraph cluster_r2 {
+      label="robot 2"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      a2 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      f2 [label="federate", fillcolor="#bbdefb"];
+      a2 -> f2 [color="#1565c0"];
+    }
+    subgraph cluster_rN {
+      label="robot N"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      aN [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      fN [label="federate", fillcolor="#bbdefb"];
+      aN -> fN [color="#1565c0"];
+    }
+
+    rti [label="RTI   —   logical time + total order of proposals", fillcolor="#ffe0b2", penwidth=1.6];
+
+    f1 -> rti [color="#1565c0"];
+    f2 -> rti [color="#1565c0"];
+    fN -> rti [color="#1565c0"];
+    f1 -> f2 [dir=both, style=dashed, color="#64b5f6", constraint=false];
+    f2 -> fN [dir=both, style=dashed, color="#64b5f6", constraint=false];
+    a1 -> a2 [dir=both, style=dashed, color="#66bb6a", constraint=false];
+    a2 -> aN [dir=both, style=dashed, color="#66bb6a", constraint=false];
+  }
+
+  legend [shape=plaintext, fillcolor="none", fontsize=9, label=<
+    <table border="0" cellborder="0" cellspacing="6">
+      <tr>
+        <td align="left"><font color="#1565c0">&#8212;&#8212; control plane (app &#8594; federate &#8594; RTI)</font></td>
+        <td align="left"><font color="#1565c0">- - proposal mesh</font></td>
+        <td align="left"><font color="#2e7d32">- - DDS gossip</font></td>
+        <td align="left"><font color="#78909c">Docker net &#183; 1 IP / container</font></td>
+      </tr>
+    </table>>];
+  rti -> legend [style=invis];
+}

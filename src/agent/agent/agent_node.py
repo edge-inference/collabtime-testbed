@@ -116,8 +116,11 @@ class AgentNode(Node):
                 self.renew_task_lease()
                 self.lease_renewal_timer = 120.0
         
-        # Always publish state
-        self.publish_state()
+        # Publish state at ~3 Hz (every 3rd tick). Enough for 2 s/step virtual
+        # motion, and cuts the DDS chatter that every DSM + metrics node processes.
+        self._pub_div = (getattr(self, "_pub_div", 0) + 1) % 3
+        if self._pub_div == 0:
+            self.publish_state()
 
     def try_get_task(self):
         """Query available tasks and claim one."""
@@ -137,14 +140,29 @@ class AgentNode(Node):
         try:
             response = future.result()
             if response.success and response.available_tasks:
-                # Pick first available task
-                task = response.available_tasks[0]
+                # Pick the nearest available task (matches the simulation's
+                # distributed pull heuristic). Concurrent agents may target the
+                # same task; the LF control plane resolves the claim race.
+                task = self._select_nearest_task(response.available_tasks)
                 self.get_logger().info(f"Found task {task.task_id} at location {task.location}")
                 self.try_claim_task(task.task_id, task.location)
             else:
                 self.get_logger().debug("No available tasks")
         except Exception as e:
             self.get_logger().error(f"Failed to get tasks: {e}")
+
+    def _select_nearest_task(self, tasks):
+        """Return the task whose location node is closest (Manhattan) to us."""
+        if self.graph is None:
+            return tasks[0]
+        cx, cy = self.graph.get_node_position(self.current_node)
+        best, best_dist = None, None
+        for task in tasks:
+            tx, ty = self.graph.get_node_position(task.location)
+            dist = abs(tx - cx) + abs(ty - cy)
+            if best_dist is None or dist < best_dist:
+                best, best_dist = task, dist
+        return best if best is not None else tasks[0]
 
     def try_claim_task(self, task_id, location):
         """Attempt to claim a task."""
@@ -313,8 +331,9 @@ class AgentNode(Node):
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1.0)
-            sock.connect(('localhost', 9000 + self.device_id))
-            
+            fed_host = os.environ.get('LF_FED_HOST', 'localhost')
+            sock.connect((fed_host, 9000 + self.device_id))
+
             request = {
                 'type': 'acquire_node_lock',
                 'node_id': self.current_node,
@@ -343,8 +362,9 @@ class AgentNode(Node):
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1.0)
-            sock.connect(('localhost', 9000 + self.device_id))
-            
+            fed_host = os.environ.get('LF_FED_HOST', 'localhost')
+            sock.connect((fed_host, 9000 + self.device_id))
+
             request = {
                 'type': 'release_node_lock',
                 'node_id': self.current_node,

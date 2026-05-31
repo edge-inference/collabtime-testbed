@@ -70,13 +70,9 @@ class TaskRegistry:
         Get available tasks, optionally filtered by region.
         Strong, consistent read - no stale data.
         """
-        available = []
-        for task in self.tasks.values():
-            if task.status == TaskStatus.AVAILABLE:
-                if location is not None and max_distance is not None:
-                    pass
-                available.append(task)
-        return available
+        # location / max_distance filtering is not used by current callers
+        # (agents do nearest-task selection client-side); kept for API compat.
+        return [t for t in self.tasks.values() if t.status == TaskStatus.AVAILABLE]
     
     def claim_task(self, task_id: int, agent_id: int) -> bool:
         """

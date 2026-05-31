@@ -13,6 +13,8 @@ import socket
 import json
 import threading
 import time
+import os
+import csv
 
 
 class LFBridgeNode(Node):
@@ -47,17 +49,46 @@ class LFBridgeNode(Node):
         
         # Publish Task Events for Metrics Dashboard
         self.task_event_pub = self.create_publisher(TaskEvent, 'task_events', 10)
-        
+
+        # Per-robot coordination-overhead log: round-trip time of each request
+        # through the LF socket + RTI (this is the measured T_claim etc.).
+        # One file per bridge process avoids cross-process write contention.
+        self._overhead = None
+        try:
+            logs_dir = os.environ.get("TESTBED_LOGS_DIR", "/ros2_ws/logs")
+            os.makedirs(logs_dir, exist_ok=True)
+            self._overhead_file = open(
+                os.path.join(logs_dir, f"claim_robot{self.device_id}.csv"), "a", newline="")
+            self._overhead = csv.writer(self._overhead_file)
+        except Exception as e:
+            self.get_logger().warn(f"overhead log disabled: {e}")
+
         self.get_logger().info(f"LF Bridge started (device_id={self.device_id}, lf_port={self.lf_port})")
+
+    def _record_overhead(self, kind: str, ms: float):
+        """Append one coordination round-trip latency sample (ms)."""
+        if self._overhead is None:
+            return
+        try:
+            self._overhead.writerow([kind, round(ms, 3), int(time.time() * 1000)])
+            self._overhead_file.flush()
+        except Exception:
+            pass
     
     def connect_to_lf(self):
         """Connect to local LF federate via TCP socket"""
-        max_retries = 10
+        # Generous retry budget: with large federations the federate's socket
+        # can take a while to open (it binds only once the federation assembles).
+        max_retries = 60
         for attempt in range(max_retries):
             try:
                 self.lf_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.lf_socket.connect(('localhost', self.lf_port))
-                self.get_logger().info(f"Connected to LF federate on port {self.lf_port}")
+                # Host of this robot's federate: same container on host-net
+                # (localhost), or the federate's service name on a bridge net
+                # (e.g. federate__f1), set via LF_FED_HOST.
+                fed_host = os.environ.get('LF_FED_HOST', 'localhost')
+                self.lf_socket.connect((fed_host, self.lf_port))
+                self.get_logger().info(f"Connected to LF federate at {fed_host}:{self.lf_port}")
                 return
             except ConnectionRefusedError:
                 if attempt < max_retries - 1:
@@ -72,20 +103,21 @@ class LFBridgeNode(Node):
                     sys.exit(1)
     
     def send_to_lf(self, message: dict) -> dict:
-        """Send message to LF federate and wait for response"""
+        """Send message to LF federate and wait for response (round-trip timed)."""
+        t0 = time.perf_counter()
         try:
             # Send request
             msg_str = json.dumps(message) + '\n'
             self.lf_socket.sendall(msg_str.encode('utf-8'))
-            
+
             # Receive response
             response_str = self.lf_socket.recv(4096).decode('utf-8')
-            response = json.loads(response_str)
-            
-            return response
+            return json.loads(response_str)
         except Exception as e:
             self.get_logger().error(f"LF communication error: {e}")
             return {'success': False, 'error': str(e)}
+        finally:
+            self._record_overhead(message.get('type', '?'), (time.perf_counter() - t0) * 1000.0)
 
     def publish_event(self, task_id, agent_id, event_type):
         """Publish task lifecycle event"""

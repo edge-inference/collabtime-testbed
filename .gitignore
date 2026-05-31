@@ -31,8 +31,16 @@ __pycache__/
 RTI
 federate__*
 
+# Generated testbed artifacts (produced by scripts/gen_*.py)
+docker-compose.[0-9]*.yml
+src/coord/lf/coordinator_[0-9]*.lf
+
+# Raw per-run logs (results/ and figures/ are kept as deliverables)
+logs/
+
 # Temporary files
 *.tmp
 *.bak
 *.log
 
+docker-compose.ros.*.yml

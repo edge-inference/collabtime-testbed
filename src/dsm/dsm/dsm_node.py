@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from interfaces.msg import DSMUpdate, AgentState
 import time
+import os
+import csv
 
 class DSMNode(Node):
     """
@@ -42,7 +44,18 @@ class DSMNode(Node):
         # Timers
         self.create_timer(0.3, self.send_gossip)       # Gossip every 300ms
         self.create_timer(1.0, self.compute_jam_signals)  # Update jams every 1s
-        
+
+        # Per-robot Age-of-Information log: staleness of accepted peer gossip.
+        self._aoi = None
+        try:
+            logs_dir = os.environ.get("TESTBED_LOGS_DIR", "/ros2_ws/logs")
+            os.makedirs(logs_dir, exist_ok=True)
+            self._aoi_file = open(
+                os.path.join(logs_dir, f"aoi_robot{self.device_id}.csv"), "a", newline="")
+            self._aoi = csv.writer(self._aoi_file)
+        except Exception:
+            self._aoi = None
+
         self.get_logger().info(f"DSM Node started (device_id={self.device_id})")
 
     def handle_agent_state(self, msg):
@@ -80,6 +93,18 @@ class DSMNode(Node):
         """Merge incoming gossip data (CRDT merge)."""
         if msg.source_agent_id == self.device_id:
             return  # Ignore self
+
+        # Record Age-of-Information: staleness of received gossip relative to the
+        # 300 ms gossip period (bounded-staleness / AoI evidence for the data plane).
+        if self._aoi is not None and msg.timestamps:
+            now_ms = int(time.time() * 1000)
+            age = now_ms - max(msg.timestamps)
+            if age >= 0:
+                try:
+                    self._aoi.writerow([msg.layer_name, age, now_ms])
+                    self._aoi_file.flush()
+                except Exception:
+                    pass
         
         # Merge flow traces (Last-Write-Wins based on timestamp)
         if msg.layer_name == "flow_trace":

@@ -1,0 +1,39 @@
+// Context-Fabric testbed — single robot (appendix figure), top-down so it
+// stays narrow: ROS application container (top) -> federate container (middle)
+// -> RTI (bottom). One robot = two containers on the bridge "lf".
+// Render:  dot -Tpng architecture_robot.dot -o architecture_robot.png
+digraph robot {
+  rankdir=TB; bgcolor="white"; fontname="Helvetica";
+  nodesep=0.5; ranksep=0.7; compound=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.14,0.10", penwidth=1.1];
+  edge [fontname="Helvetica", fontsize=9, color="#546e7a"];
+
+  // ---- the robot's ROS application container ----
+  subgraph cluster_app {
+    label="container  robot{i}   —   ROS application stack";
+    labeljust=l; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#1b5e20";
+    style="rounded,filled"; fillcolor="#f1f8e9"; color="#7cb342"; penwidth=1.6;
+    policy [label="robot policy\nIDLE → CLAIMING → NAVIGATING → WORKING → COMPLETING", fillcolor="#fff9c4"];
+    bridge [label="bridge\nROS ⇄ LF", fillcolor="#c5e1a5"];
+    dsm    [label="DSM\ngossip cache (AoI)", fillcolor="#c5e1a5"];
+    policy -> bridge [dir=both, color="#1565c0", label="ROS service\nclaim / complete"];
+    policy -> dsm    [color="#2e7d32", label="state +\npath intents"];
+  }
+
+  // ---- the robot's coordination-microservice container ----
+  subgraph cluster_fed {
+    label="container  federate__f{i}";
+    labeljust=l; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#0d47a1";
+    style="rounded,filled"; fillcolor="#e3f2fd"; color="#1e88e5"; penwidth=1.6;
+    fed [label="LF federate f{i}\nreplicated task registry · binds :900{i}", fillcolor="#bbdefb"];
+  }
+
+  rti   [label="RTI  +  peer federates\n(all-to-all proposals, strong & ordered)", fillcolor="#ffe0b2", penwidth=1.4];
+  peers [label="other robots'\nDSM", fillcolor="#a5d6a7", penwidth=1.4];
+
+  // cross-container + external links (federate below app, RTI below federate)
+  bridge -> fed   [dir=both, color="#1565c0", label="TCP  federate__f{i}:900{i}\n(service-DNS)"];
+  policy -> fed   [style=dashed, color="#5d4037", label="JIT node lock (DNS)"];
+  fed    -> rti   [dir=both, color="#1565c0"];
+  dsm    -> peers [dir=both, style=dashed, color="#2e7d32", label="DDS /dsm_gossip 300 ms (eventual, multicast)"];
+}

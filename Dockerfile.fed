@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     build-essential \
     openjdk-17-jre \
+    iproute2 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies for ROS 2 nodes
@@ -32,9 +33,11 @@ COPY src/ /ros2_ws/src/
 COPY scripts/ /ros2_ws/scripts/
 COPY config/ /ros2_ws/config/
 
-# Compile LF code first (needed for coord package)
-RUN cd /ros2_ws/src/coord/lf && \
-    lfc -f coordinator.lf
+# Generate + compile one LF federation per fleet size (federation size is fixed
+# at LF compile time). Produces, for each N:
+#   /ros2_ws/fed-gen/coordinator_<N>/bin/{RTI, federate__f1 .. federate__fN}
+# Keep --sizes in sync with fleet_sizes in config/testbed.yaml.
+RUN python3 /ros2_ws/scripts/gen_lf.py --sizes 2,4,8,16 --compile
 
 # Source ROS 2 and build ONLY the interfaces package (and dependencies if any)
 RUN . /opt/ros/humble/setup.sh && \
@@ -43,14 +46,15 @@ RUN . /opt/ros/humble/setup.sh && \
 # Force install Python packages to system path (standard install)
 RUN pip3 install ./src/common ./src/dsm ./src/agent ./src/coord
 
-# Set environment variables for RTI connection
-ENV LF_RTI_HOST=172.17.174.183
+# Default RTI connection (docker-compose overrides these per run; with
+# network_mode: host the federation lives on the host loopback).
+ENV LF_RTI_HOST=127.0.0.1
 ENV LF_RTI_PORT=15045
 ENV LF_FEDERATION_ID=context-fabric-testbed-2025
 
-# Source the workspace in the entrypoint
+# Source the workspace for interactive shells
 RUN echo "source /ros2_ws/install/setup.bash" >> /root/.bashrc
 
-# Default command: run federate 1 (can be overridden)
-CMD ["/bin/bash", "-c", "source /ros2_ws/install/setup.bash && /ros2_ws/fed-gen/coordinator/bin/federate__fed1 -i context-fabric-testbed-2025 --rti ${LF_RTI_HOST}:${LF_RTI_PORT}"]
+# Compose overrides `command:` for every service; this is just a safe default.
+CMD ["/bin/bash"]
 

@@ -1,27 +1,28 @@
 #!/bin/bash
-# Start Lingua Franca RTI (Run Time Infrastructure)
+# Start the Lingua Franca RTI for an N-federate coordinator federation.
 #
-# The RTI coordinates logical time across all LF federates.
-# Run this FIRST before starting the federated coordinators.
+# The RTI coordinates logical time across all federates and must be running
+# before they start. Federation size N must match the compiled program.
+#
+# Usage: start_rti.sh [N] [federation_id] [exchanges_per_interval]
+#   (docker-compose normally runs the RTI directly; this is a host helper.)
 
 set -e
 
+N=${1:-2}
+FED_ID=${2:-context-fabric-testbed-2025}
+EXCHANGES=${3:-10}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RTI_BIN="$SCRIPT_DIR/../lf/src-gen/Coordinator/bin/RTI"
+REPO="$(cd "$SCRIPT_DIR/../../.." && pwd)"          # src/coord/scripts -> repo root
+RTI_BIN="$REPO/fed-gen/coordinator_${N}/bin/RTI"
 
 if [ ! -f "$RTI_BIN" ]; then
-    echo "Error: RTI binary not found. Did you run build_lf.sh?"
+    echo "Error: RTI binary not found for N=$N."
     echo "Expected: $RTI_BIN"
+    echo "Generate + compile it first, e.g.:  python3 scripts/gen_lf.py --sizes $N --compile"
     exit 1
 fi
 
-echo "Starting Lingua Franca RTI..."
-echo "Federates will connect to this RTI to synchronize logical time."
-echo ""
-
-# Run RTI with appropriate flags
-"$RTI_BIN" -n 2 -c 1  # -n 2 = 2 federates, -c 1 = clock sync mode
-
-# Note: RTI will listen on port 15045 by default
-# Federates must be able to reach this port
-
+echo "Starting LF RTI for $N federates (federation: $FED_ID, port 15045)..."
+"$RTI_BIN" -i "$FED_ID" -n "$N" -c init exchanges-per-interval "$EXCHANGES"
