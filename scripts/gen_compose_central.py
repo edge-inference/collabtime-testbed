@@ -78,8 +78,6 @@ def build(cfg, n):
         "volumes": vols,
         "stdin_open": True, "tty": True,
     }
-    # Single central federate: dodge any stale baked bytecode (see gen_compose_ros).
-    services[CENTRAL_FED] = {"environment": {"PYTHONPYCACHEPREFIX": "/tmp/pyc"}}
     return {"services": services}
 
 

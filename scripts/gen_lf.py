@@ -341,6 +341,11 @@ REACTOR = '''reactor CoordinatorFederate(device_id=1, num_peers=1, lease_ttl_ms=
                             except: pass
                             del self.clients[client_fd]
                             if client_fd in self.client_buffers: del self.client_buffers[client_fd]
+  =} STP(0) {=
+    # Decentralized safety net: a peer proposal arrived after this federate's
+    # logical time advanced past it (tardy). With STP_offset set this is rare --
+    # log it for visibility rather than failing. (Centralized never triggers it.)
+    print(f"[LF Fed {self.device_id}] tardy proposal (STP violation)", flush=True)
   =}
 }
 '''
@@ -369,6 +374,9 @@ def build_federated_reactor(n: int, at_host=None) -> str:
     lines.append("  # federate's multiport input (INCLUDING itself -- a federate applies")
     lines.append("  # its own requests to its replica only on receipt, so the self-loop")
     lines.append("  # is required for local consistency).")
+    lines.append("  # O(N^2) connections, but 1 hop + clean ordering -- fine to N=16. For")
+    lines.append("  # N>>16 a tree/star with flood-relay would cut connections at the cost of")
+    lines.append("  # multi-hop ordering (tree) or a central hub (star): future work.")
     lines.append("  #")
     lines.append("  # `after 1 msec` is essential, not cosmetic: the mesh (self-loops +")
     lines.append("  # mutual edges) forms zero-delay cycles between federates. Under")
@@ -420,6 +428,31 @@ def compile_lf(lf_path: str) -> int:
     return subprocess.call([lfc, "-f", os.path.basename(lf_path)], cwd=lf_dir)
 
 
+def strip_pyc_from_dockerfiles(n: int) -> int:
+    """Patch lfc-generated federate Dockerfiles so the image ships NO bytecode:
+    disable .pyc writing + delete any __pycache__ the build left behind. Removes
+    the stale-.pyc hazard at the source (a cached `RUN make` layer could otherwise
+    bake an old task_registry.cpython-310.pyc), so the federate always compiles the
+    current .py -- no runtime PYTHONPYCACHEPREFIX workaround needed."""
+    import glob
+    repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    pats = [os.path.join(d, "fed-gen", f"coordinator_{n}", "src-gen", "federate__*", "Dockerfile")
+            for d in (repo, LF_DIR)]
+    inject = ("# strip baked bytecode (avoid stale .pyc from cached build layers)\n"
+              "ENV PYTHONDONTWRITEBYTECODE=1\n"
+              'RUN find /lingua-franca -name "__pycache__" -type d -prune -exec rm -rf {} + 2>/dev/null; true\n')
+    patched = 0
+    for df in sorted({p for pat in pats for p in glob.glob(pat)}):
+        with open(df) as f:
+            txt = f.read()
+        if "PYTHONDONTWRITEBYTECODE" in txt or "ENTRYPOINT" not in txt:
+            continue
+        with open(df, "w") as f:
+            f.write(txt.replace("ENTRYPOINT", inject + "ENTRYPOINT", 1))
+        patched += 1
+    return patched
+
+
 def main():
     ap = argparse.ArgumentParser(description="Generate N-federate LF coordinator programs")
     ap.add_argument("--sizes", default="2,4,8,16",
@@ -447,7 +480,11 @@ def main():
         write_lf(n, out_path, at_host, args.docker)
         print(f"[gen_lf] wrote {out_path} (N={n})")
         if args.compile:
-            rc |= compile_lf(out_path)
+            c = compile_lf(out_path)
+            rc |= c
+            if c == 0:
+                print(f"[gen_lf] stripped baked bytecode from "
+                      f"{strip_pyc_from_dockerfiles(n)} federate Dockerfile(s)")
     return rc
 
 

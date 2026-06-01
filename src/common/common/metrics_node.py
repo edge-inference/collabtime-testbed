@@ -69,6 +69,10 @@ class MetricsNode(Node):
         self.tasks_created = 0
         self.tasks_completed = 0
         self.tasks_failed = 0
+        # active task window (first create -> last complete) so throughput matches
+        # the sim (completed / window), not diluted by warmup + drain
+        self.first_create_ms = None
+        self.last_complete_ms = None
         # create->complete and claim->complete latency samples (seconds)
         self.lat_create = []
         self.lat_claim = []
@@ -119,6 +123,8 @@ class MetricsNode(Node):
             if "created_ms" not in entry:
                 entry["created_ms"] = msg.timestamp_ms
                 self.tasks_created += 1
+                if self.first_create_ms is None:
+                    self.first_create_ms = msg.timestamp_ms
             entry["status"] = "AVAILABLE"
         elif msg.event_type == "CLAIMED":
             entry["claimed_ms"] = msg.timestamp_ms
@@ -127,6 +133,7 @@ class MetricsNode(Node):
             entry["completed_ms"] = msg.timestamp_ms
             entry["status"] = "COMPLETED"
             self.tasks_completed += 1
+            self.last_complete_ms = msg.timestamp_ms
             if "created_ms" in entry:
                 self.lat_create.append((msg.timestamp_ms - entry["created_ms"]) / 1000.0)
             if "claimed_ms" in entry:
@@ -152,7 +159,14 @@ class MetricsNode(Node):
     def compute_summary(self):
         elapsed = max(time.time() - self.start_time, 1e-9)
         completion_rate = (self.tasks_completed / self.tasks_created) if self.tasks_created else 0.0
-        throughput = self.tasks_completed / elapsed
+        # throughput over the ACTIVE task window (first create -> last complete),
+        # matching the sim's completed/duration -- not diluted by warmup/drain.
+        if (self.first_create_ms is not None and self.last_complete_ms is not None
+                and self.last_complete_ms > self.first_create_ms):
+            active_s = (self.last_complete_ms - self.first_create_ms) / 1000.0
+        else:
+            active_s = elapsed
+        throughput = self.tasks_completed / max(active_s, 1e-9)
         util, per_agent = self._fleet_utilization()
         active = len([a for a in self.agents.values() if time.time() - a["last_seen"] < 5])
         return {
@@ -161,6 +175,7 @@ class MetricsNode(Node):
             "num_robots": self.num_robots,
             "seed": self.seed,
             "elapsed_s": round(elapsed, 1),
+            "active_window_s": round(active_s, 1),
             "tasks_created": self.tasks_created,
             "tasks_completed": self.tasks_completed,
             "tasks_failed": self.tasks_failed,

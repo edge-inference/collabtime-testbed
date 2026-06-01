@@ -1,0 +1,66 @@
+// Distributed Context-Fabric with DECENTRALIZED LF coordination (thesis figure).
+// Contrast with architecture_system.dot (centralized RTI): here the RTI is NOT in
+// the message path. Each robot keeps its own coordinator replica (federate);
+// federates exchange proposals PEER-TO-PEER and advance on their own physical
+// clock via an STP_offset. The RTI only bootstraps the federation (startup +
+// clock sync), so it is idle during execution -- which is why this scales to N=16.
+// Render:  dot -Tpng architecture_decentralized.dot -o architecture_decentralized.png
+digraph testbed_decentral {
+  rankdir=TB; bgcolor="white"; fontname="Helvetica";
+  nodesep=0.55; ranksep=0.7; compound=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.18,0.12", penwidth=1.1, width=1.7];
+  edge [fontname="Helvetica", fontsize=9, color="#546e7a"];
+
+  subgraph cluster_lf {
+    color="#b0bec5"; style="rounded,dashed"; penwidth=1.2; label="";
+
+    subgraph cluster_r1 {
+      label="robot 1"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      a1 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      f1 [label="federate\n(replica)", fillcolor="#bbdefb"];
+      a1 -> f1 [color="#1565c0"];
+    }
+    subgraph cluster_r2 {
+      label="robot 2"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      a2 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      f2 [label="federate\n(replica)", fillcolor="#bbdefb"];
+      a2 -> f2 [color="#1565c0"];
+    }
+    subgraph cluster_rN {
+      label="robot N"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      aN [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      fN [label="federate\n(replica)", fillcolor="#bbdefb"];
+      aN -> fN [color="#1565c0"];
+    }
+
+    // PEER-TO-PEER proposal mesh: direct federate<->federate, the RTI is NOT involved
+    f1 -> f2 [dir=both, color="#1565c0", penwidth=1.6, constraint=false];
+    f2 -> fN [dir=both, color="#1565c0", penwidth=1.6, constraint=false,
+              label="peer-to-peer proposals\n(self-advance via STP_offset, no RTI barrier)"];
+    f1 -> fN [dir=both, color="#1565c0", penwidth=1.6, constraint=false];
+
+    // data-plane gossip among robots (unchanged)
+    a1 -> a2 [dir=both, style=dashed, color="#66bb6a", constraint=false];
+    a2 -> aN [dir=both, style=dashed, color="#66bb6a", constraint=false];
+
+    // RTI DEMOTED: bootstrap only, off the critical path (faint, dashed)
+    rti [label="RTI — startup + clock-sync only\n(NOT in the message path · idle at run time)",
+         fillcolor="#fff3e0", color="#cfcfcf", style="rounded,filled,dashed", fontcolor="#9e9e9e"];
+    f1 -> rti [style=dotted, color="#cfcfcf", label="clock sync"];
+    f2 -> rti [style=dotted, color="#cfcfcf"];
+    fN -> rti [style=dotted, color="#cfcfcf"];
+  }
+
+  legend [shape=plaintext, fillcolor="none", fontsize=9, label=<
+    <table border="0" cellborder="0" cellspacing="6">
+      <tr>
+        <td align="left"><font color="#1565c0">&#8212;&#8212; peer-to-peer proposal mesh (no RTI)</font></td>
+        <td align="left"><font color="#2e7d32">- - DDS gossip (data plane)</font></td>
+        <td align="left"><font color="#9e9e9e">&#183;&#183;&#183; RTI: startup / clock-sync only (idle)</font></td>
+      </tr>
+    </table>>];
+  rti -> legend [style=invis];
+}

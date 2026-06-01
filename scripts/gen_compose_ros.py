@@ -71,16 +71,8 @@ def build(cfg, n):
         "volumes": vols,
         "stdin_open": True, "tty": True,
     }
-    # Force federates to ignore stale baked bytecode. LF's generated federate
-    # Dockerfile copies the builder's src-gen (incl. a __pycache__); a cached
-    # `RUN make` layer can leave a STALE task_registry.cpython-310.pyc there
-    # (compiled from an older task_registry.py), and Python loads that .pyc
-    # instead of recompiling the current source -> federate get_tasks throws
-    # `'TaskRegistry' object has no attribute 'tasks'` and the federation never
-    # coordinates (seen deterministically at N=4). Redirecting the bytecode
-    # cache out of the source tree forces a fresh compile from the .py.
-    for i in range(1, n + 1):
-        services[f"federate__f{i}"] = {"environment": {"PYTHONPYCACHEPREFIX": "/tmp/pyc"}}
+    # (Stale baked bytecode is stripped in the federate Dockerfile by gen_lf.py,
+    # so no runtime PYTHONPYCACHEPREFIX workaround is needed here.)
     # Opt-in live browser grid view (WITH_VIZ=1): publishes :8089 to the host.
     if os.environ.get("WITH_VIZ"):
         services["viz"] = {
