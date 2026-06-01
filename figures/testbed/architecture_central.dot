@@ -1,0 +1,56 @@
+// Context-Fabric testbed — CENTRALIZED baseline architecture (thesis figure).
+// Contrast with architecture_system.dot (distributed): instead of one federate
+// (coordinator replica) per robot + an all-to-all proposal mesh, ALL robots'
+// ROS apps talk to ONE shared federate -- a single central coordinator. Same
+// robots/agents/workload/Coordinator code; only the topology differs.
+// Render:  dot -Tpng architecture_central.dot -o architecture_central.png
+digraph testbed_central {
+  rankdir=TB; bgcolor="white"; fontname="Helvetica";
+  nodesep=0.55; ranksep=0.7; compound=true;
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.18,0.12", penwidth=1.1, width=1.7, fixedsize=false];
+  edge [fontname="Helvetica", fontsize=9, color="#546e7a"];
+
+  subgraph cluster_lf {
+    color="#b0bec5"; style="rounded,dashed"; penwidth=1.2; label="";
+
+    subgraph cluster_r1 {
+      label="robot 1"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      a1 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+    }
+    subgraph cluster_r2 {
+      label="robot 2"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      a2 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+    }
+    subgraph cluster_rN {
+      label="robot N"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
+      style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
+      aN [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+    }
+
+    // ONE shared coordinator for the whole fleet (single point of contention + failure)
+    fc  [label="central coordinator\n(single shared federate)", fillcolor="#bbdefb", penwidth=2.0, color="#1e88e5"];
+    rti [label="RTI   —   logical time", fillcolor="#ffe0b2", penwidth=1.6];
+
+    // every robot's control plane converges on the one coordinator
+    a1 -> fc [color="#1565c0"];
+    a2 -> fc [color="#1565c0"];
+    aN -> fc [color="#1565c0"];
+    fc -> rti [color="#1565c0"];
+
+    // data plane (path-intent gossip) is still peer-to-peer, as in the distributed arm
+    a1 -> a2 [dir=both, style=dashed, color="#66bb6a", constraint=false];
+    a2 -> aN [dir=both, style=dashed, color="#66bb6a", constraint=false];
+  }
+
+  legend [shape=plaintext, fillcolor="none", fontsize=9, label=<
+    <table border="0" cellborder="0" cellspacing="6">
+      <tr>
+        <td align="left"><font color="#1565c0">&#8212;&#8212; control plane (every app &#8594; one coordinator &#8594; RTI)</font></td>
+        <td align="left"><font color="#2e7d32">- - DDS gossip (data plane)</font></td>
+        <td align="left"><font color="#1e88e5">single coordinator: contention point + single point of failure</font></td>
+      </tr>
+    </table>>];
+  rti -> legend [style=invis];
+}
