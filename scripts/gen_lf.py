@@ -54,7 +54,7 @@ preamble {=
 # The reactor body. Identical control logic to the original coordinator.lf,
 # except the inputs are a single multiport ``proposal_in`` and the proposal
 # reaction iterates over it.
-REACTOR = '''reactor CoordinatorFederate(device_id=1, num_peers=1, lease_ttl_ms=300000) {
+REACTOR = '''reactor CoordinatorFederate(device_id=1, num_peers=1, lease_ttl_ms=300000, STP_offset = 0) {
   input[num_peers] proposal_in
   output proposal_out
 
@@ -353,11 +353,17 @@ def build_federated_reactor(n: int, at_host=None) -> str:
     default (localhost) is correct; on a Docker bridge each federate must
     advertise a peer-reachable address, so we emit ``... at "<ip>"``.
     """
+    coord = os.environ.get("LF_COORD", "centralized")
+    sta_ms = os.environ.get("LF_STA_MS", "100")   # decentralized safe-to-advance (maxwait) offset
     lines = ["federated reactor {"]
     for i in range(1, n + 1):
         # LF wants the `at` host UNQUOTED and the instantiation `;`-terminated.
         at = f" at {at_host(i)};" if at_host else ""
-        lines.append(f"  f{i} = new CoordinatorFederate(device_id={i}, num_peers={n}){at}")
+        # decentralized: each federate waits STP_offset (physical time) for peer
+        # proposals before advancing -- no central RTI barrier. (Centralized
+        # coordination ignores STP_offset and uses the RTI.)
+        stp = f", STP_offset = {sta_ms} msec" if coord == "decentralized" else ""
+        lines.append(f"  f{i} = new CoordinatorFederate(device_id={i}, num_peers={n}{stp}){at}")
     lines.append("")
     lines.append("  # All-to-all proposal mesh: every federate's output feeds every")
     lines.append("  # federate's multiport input (INCLUDING itself -- a federate applies")
@@ -386,12 +392,15 @@ def build_federated_reactor(n: int, at_host=None) -> str:
 
 def build_lf(n: int, at_host=None, docker=False) -> str:
     target = TARGET_AND_PREAMBLE
+    coord = os.environ.get("LF_COORD", "centralized")   # or "decentralized"
+    if coord != "centralized":
+        target = target.replace("coordination: centralized,", f"coordination: {coord},")
     if docker:
         # LF native Docker support: lfc generates per-federate Dockerfiles + a
         # docker-compose.yml that runs RTI + federates as services on a shared
         # docker network, addressing each other by service-name DNS.
-        target = target.replace("  coordination: centralized,",
-                                "  coordination: centralized,\n  docker: true,")
+        target = target.replace(f"  coordination: {coord},",
+                                f"  coordination: {coord},\n  docker: true,")
     return "\n".join([target, REACTOR, build_federated_reactor(n, at_host), ""])
 
 
