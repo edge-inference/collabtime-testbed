@@ -161,29 +161,32 @@ def make_figure(ns, dist, cen, figs, tag=""):
         print(f"  [figure skipped: matplotlib unavailable: {e}]")
         return []
     os.makedirs(figs, exist_ok=True)
+    plt.rcParams.update({"font.size": 15})
 
-    def series(rows, key):
-        return [rows[n][f"{key}_mean"] for n in ns], [rows[n][f"{key}_sd"] for n in ns]
+    def mean(rows, key):
+        return [rows[n][f"{key}_mean"] for n in ns]
 
-    fig, ax = plt.subplots(2, 2, figsize=(9.5, 6.8))
-    # the same four metrics the thesis simulation reports, for both modes
+    fig, ax = plt.subplots(2, 2, figsize=(10, 7.4))
+    # the same four metrics the thesis simulation reports, for both modes.
+    # Metric goes in the y-axis label; no titles, no grid, no error bars.
     panels = [
-        (ax[0, 0], "completion_rate", "Completion rate", "%", 100.0),
-        (ax[0, 1], "throughput_tps", "Throughput", "tasks/s", 1.0),
-        (ax[1, 0], "avg_latency_s", "Task latency (create→complete)", "s", 1.0),
-        (ax[1, 1], "agent_utilization", "Robot utilization", "% working", 100.0),
+        (ax[0, 0], "completion_rate", "Completion rate (%)", 100.0),
+        (ax[0, 1], "throughput_tps", "Throughput (tasks/s)", 1.0),
+        (ax[1, 0], "avg_latency_s", "Task latency (s)", 1.0),
+        (ax[1, 1], "agent_utilization", "Utilization (% working)", 100.0),
     ]
-    for a, key, title, ylab, scale in panels:
-        dm, ds = series(dist, key); cm, cs = series(cen, key)
-        a.errorbar(ns, [scale*x for x in dm], yerr=[scale*x for x in ds],
-                   fmt="o-", capsize=3, label="distributed")
-        a.errorbar(ns, [scale*x for x in cm], yerr=[scale*x for x in cs],
-                   fmt="s--", capsize=3, color="tab:red", label="centralized")
-        a.set(title=title, xlabel="robots N", ylabel=ylab)
-        a.grid(True, alpha=0.3); a.legend(fontsize=8)
+    for a, key, ylab, scale in panels:
+        a.plot(ns, [scale*x for x in mean(dist, key)], "o-", linewidth=2.4,
+               markersize=9, label="distributed")
+        a.plot(ns, [scale*x for x in mean(cen, key)], "s--", linewidth=2.4,
+               markersize=9, color="tab:red", label="centralized")
+        a.set_xlabel("robots N", fontsize=16)
+        a.set_ylabel(ylab, fontsize=16)
+        a.set_xticks(ns)
+        a.tick_params(labelsize=14)
+        a.legend(fontsize=14, frameon=False)
         if scale == 100.0:
             a.set_ylim(0, 105)
-    fig.suptitle("Centralized vs distributed coordination — weak scaling (real ROS2 + Lingua Franca)")
     fig.tight_layout()
     saved = []
     for ext in ("pdf", "png"):

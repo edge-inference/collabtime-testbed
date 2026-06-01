@@ -16,17 +16,17 @@ digraph testbed_central {
     subgraph cluster_r1 {
       label="robot 1"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
       style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
-      a1 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      a1 [label="ROS app\nbridge · policy", fillcolor="#c5e1a5"];
     }
     subgraph cluster_r2 {
       label="robot 2"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
       style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
-      a2 [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      a2 [label="ROS app\nbridge · policy", fillcolor="#c5e1a5"];
     }
     subgraph cluster_rN {
       label="robot N"; fontname="Helvetica-Bold"; fontsize=11; fontcolor="#37474f";
       style="rounded,filled"; fillcolor="#eceff1"; color="#90a4ae"; penwidth=1.5;
-      aN [label="ROS app\nbridge · dsm · policy", fillcolor="#c5e1a5"];
+      aN [label="ROS app\nbridge · policy", fillcolor="#c5e1a5"];
     }
 
     // ONE shared coordinator for the whole fleet (single point of contention + failure)
@@ -38,18 +38,15 @@ digraph testbed_central {
     a2 -> fc [color="#1565c0"];
     aN -> fc [color="#1565c0"];
     fc -> rti [color="#1565c0"];
-
-    // data plane (path-intent gossip) is still peer-to-peer, as in the distributed arm
-    a1 -> a2 [dir=both, style=dashed, color="#66bb6a", constraint=false];
-    a2 -> aN [dir=both, style=dashed, color="#66bb6a", constraint=false];
+    // NB: no inter-robot gossip in the centralized architecture (Ch.3) -- robots
+    // share no state directly; all coordination goes through the central node.
   }
 
   legend [shape=plaintext, fillcolor="none", fontsize=9, label=<
     <table border="0" cellborder="0" cellspacing="6">
       <tr>
         <td align="left"><font color="#1565c0">&#8212;&#8212; control plane (every app &#8594; one coordinator &#8594; RTI)</font></td>
-        <td align="left"><font color="#2e7d32">- - DDS gossip (data plane)</font></td>
-        <td align="left"><font color="#1e88e5">single coordinator: contention point + single point of failure</font></td>
+        <td align="left"><font color="#1e88e5">single coordinator: contention point + single point of failure (no inter-robot gossip)</font></td>
       </tr>
     </table>>];
   rti -> legend [style=invis];
