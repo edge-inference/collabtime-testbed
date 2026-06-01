@@ -44,3 +44,4 @@ logs/
 *.log
 
 docker-compose.ros.*.yml
+docker-compose.central.*.yml
