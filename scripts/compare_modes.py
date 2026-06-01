@@ -51,10 +51,10 @@ def pm(mean, sd, prec=2):
 def write_markdown(ns, dist, cen, out, tag=""):
     path = os.path.join(out, f"modes_comparison{tag}.md")
     L = ["# Context-Fabric testbed: centralized vs distributed coordination", "",
-         "Same robots, agents, task workload and LF `Coordinator` logic in both arms; "
-         "only the coordination **topology** differs -- **distributed** = one federate "
-         "(replica) per robot + gossip; **centralized** = one shared federate serving the "
-         "whole fleet. Values are mean ± sd across seeds.", "",
+         "The two Ch.3 architectures on identical robots / workload / `Coordinator` code: "
+         "**distributed** = a coordinator replica (federate) per robot + inter-robot gossip; "
+         "**centralized** = one shared coordinator serving the whole fleet, with **no inter-robot "
+         "gossip** (hence no AoI). Values are mean ± sd across seeds.", "",
          "## Per-N, both modes", "",
          "| N | mode | Completion | Throughput (tasks/min) | Avg lat (s) | Util | "
          "T_claim (ms) | AoI (ms) |",
@@ -66,7 +66,7 @@ def write_markdown(ns, dist, cen, out, tag=""):
                 f"{pm(s['avg_latency_s_mean'], s['avg_latency_s_sd'], 0)} | "
                 f"{pm(s['agent_utilization_mean'], s['agent_utilization_sd'])} | "
                 f"{pm(s['t_claim_ms_mean_mean'], s['t_claim_ms_mean_sd'], 1)} | "
-                f"{pm(s['aoi_ms_mean_mean'], s['aoi_ms_mean_sd'], 1)} |")
+                f"{'n/a' if s['aoi_ms_mean_mean'] == 0 else pm(s['aoi_ms_mean_mean'], s['aoi_ms_mean_sd'], 1)} |")
 
     for n in ns:
         L.append(row(n, "distributed", dist[n]))
@@ -88,8 +88,9 @@ def write_markdown(ns, dist, cen, out, tag=""):
     dist_bad = [n for n in ns if dist[n]['t_claim_ms_mean_mean'] >= 500 or dist[n]['completion_rate_mean'] < 0.5]
     cen_bad = [n for n in ns if cen[n]['t_claim_ms_mean_mean'] >= 500 or cen[n]['completion_rate_mean'] < 0.5]
     L += ["", "## What it shows",
-          "- Same robots / workload / `Coordinator` code in both arms, so differences are due to "
-          "coordination **topology alone** (1 central coordinator vs N replicas)."]
+          "- Identical robots, workload and `Coordinator` code; the arms differ only in the two "
+          "Ch.3 design choices -- **N replicas + gossip** (distributed) vs **one central "
+          "coordinator, no gossip** (centralized)."]
     if parity:
         L.append(f"- **Comparable at N = {', '.join(map(str, parity))}**: completion, latency and "
                  f"claim overhead are within noise between the two -- at these fleet sizes the single "
@@ -131,7 +132,7 @@ def write_latex(ns, dist, cen, out, tag=""):
         return (f"        {n} & {label} & "
                 f"{pm(100*s['completion_rate_mean'], 100*s['completion_rate_sd'], 0)} & "
                 f"{pm(s['t_claim_ms_mean_mean'], s['t_claim_ms_mean_sd'], 1)} & "
-                f"{pm(s['aoi_ms_mean_mean'], s['aoi_ms_mean_sd'], 1)} & "
+                f"{'n/a' if s['aoi_ms_mean_mean'] == 0 else pm(s['aoi_ms_mean_mean'], s['aoi_ms_mean_sd'], 1)} & "
                 f"{pm(s['avg_latency_s_mean'], s['avg_latency_s_sd'], 0)} & "
                 f"{pm(100*s['agent_utilization_mean'], 100*s['agent_utilization_sd'], 0)} "
                 r"\\").replace("±", r"$\pm$")

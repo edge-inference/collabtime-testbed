@@ -9,10 +9,9 @@
         $N$ & Compl. & Thrpt. & Avg lat. & P90 lat. & Util. & $T_{\text{claim}}$ & AoI \\
             & (\%)   & (tps)  & (s)      & (s)      & (\%)  & (ms) & (ms) \\
         \hline
-        2 & 78 $\pm$ 19 & 0.015 $\pm$ 0.003 & 97 $\pm$ 15 & 137 $\pm$ 53 & 37 $\pm$ 11 & 5.3 $\pm$ 1.0 & 0.9 $\pm$ 0.1 \\
-        4 & 97 $\pm$ 5 & 0.030 $\pm$ 0.005 & 96 $\pm$ 18 & 147 $\pm$ 53 & 35 $\pm$ 6 & 6.1 $\pm$ 1.5 & 1.1 $\pm$ 0.2 \\
-        8 & 100 & 0.057 $\pm$ 0.010 & 86 $\pm$ 2 & 108 $\pm$ 7 & 32 $\pm$ 6 & 4.4 $\pm$ 0.4 & 1.7 $\pm$ 0.1 \\
-        16 & 100 & 0.103 $\pm$ 0.024 & 81 $\pm$ 2 & 104 $\pm$ 3 & 29 $\pm$ 7 & 4.9 $\pm$ 0.5 & 3.5 $\pm$ 0.1 \\
+        2 & 78 $\pm$ 19 & 0.015 $\pm$ 0.003 & 97 $\pm$ 15 & 137 $\pm$ 53 & 37 $\pm$ 10 & 4.5 $\pm$ 1.0 & 0.0 \\
+        4 & 97 $\pm$ 5 & 0.030 $\pm$ 0.005 & 97 $\pm$ 16 & 148 $\pm$ 52 & 35 $\pm$ 6 & 5.6 $\pm$ 1.1 & 0.0 \\
+        8 & 100 & 0.057 $\pm$ 0.010 & 82 $\pm$ 3 & 101 $\pm$ 8 & 32 $\pm$ 5 & 4.4 $\pm$ 0.8 & 0.0 \\
         \hline
     \end{tabular}
     \caption[Emulated testbed results]{Context-Fabric testbed on real ROS2 + Lingua Franca, one federate per emulated robot (mean $\pm$ sd over 3 seeds). $T_{\text{claim}}$ is the measured ROS$\to$LF$\to$RTI claim round-trip; AoI is mean data-plane gossip staleness.}

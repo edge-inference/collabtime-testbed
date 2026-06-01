@@ -11,14 +11,13 @@ Quantitative validation of the federated coordination architecture, emulating **
 
 | N | Completion | Throughput | Avg/P90 lat (s) | Util | T_claim (ms) | AoI (ms) |
 |---|---|---|---|---|---|---|
-| 2 | 0.78 ± 0.19 | 0.015 ± 0.003 | 97 ± 15/137 ± 53 | 0.37 ± 0.11 | 5.3 ± 1.0 | 0.9 ± 0.1 |
-| 4 | 0.97 ± 0.05 | 0.030 ± 0.005 | 96 ± 18/147 ± 53 | 0.35 ± 0.06 | 6.1 ± 1.5 | 1.1 ± 0.2 |
-| 8 | 1.00 | 0.057 ± 0.010 | 86 ± 2/108 ± 7 | 0.32 ± 0.06 | 4.4 ± 0.4 | 1.7 ± 0.1 |
-| 16 | 1.00 | 0.103 ± 0.024 | 81 ± 2/104 ± 3 | 0.29 ± 0.07 | 4.9 ± 0.5 | 3.5 ± 0.1 |
+| 2 | 0.78 ± 0.19 | 0.015 ± 0.003 | 97 ± 15/137 ± 53 | 0.37 ± 0.10 | 4.5 ± 1.0 | 0.0 |
+| 4 | 0.97 ± 0.05 | 0.030 ± 0.005 | 97 ± 16/148 ± 52 | 0.35 ± 0.06 | 5.6 ± 1.1 | 0.0 |
+| 8 | 1.00 | 0.057 ± 0.010 | 82 ± 3/101 ± 8 | 0.32 ± 0.05 | 4.4 ± 0.8 | 0.0 |
 
 ## What the data shows
-- **Coordination stays cheap through N=16**: completion 100%, claim overhead 5.3->4.9 ms, AoI <= 3.5 ms (<< 300 ms gossip period) -- all far below the ~75 s task service time.
-- **Latency bounded** in this range (avg 81-97 s); throughput grows with the fleet.
+- **Coordination stays cheap through N=8**: completion 100%, claim overhead 4.5->4.4 ms, AoI <= 0.0 ms (<< 300 ms gossip period) -- all far below the ~75 s task service time.
+- **Latency bounded** in this range (avg 82-97 s); throughput grows with the fleet.
 
 ## Artifacts
 - `results/testbed_metrics.csv` (per-seed) and `results/testbed_metrics_agg.csv` (per-N mean/sd)
