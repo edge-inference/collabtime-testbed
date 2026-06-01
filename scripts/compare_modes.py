@@ -175,19 +175,23 @@ def make_figure(ns, dist, cen, figs, tag=""):
         (ax[1, 0], "avg_latency_s", "Task latency (s)", 1.0),
         (ax[1, 1], "agent_utilization", "Utilization (% working)", 100.0),
     ]
+    handles = []
     for a, key, ylab, scale in panels:
-        a.plot(ns, [scale*x for x in mean(dist, key)], "o-", linewidth=2.4,
-               markersize=9, label="distributed")
-        a.plot(ns, [scale*x for x in mean(cen, key)], "s--", linewidth=2.4,
-               markersize=9, color="tab:red", label="centralized")
+        l1, = a.plot(ns, [scale*x for x in mean(dist, key)], "o-", linewidth=2.4,
+                     markersize=9, label="distributed")
+        l2, = a.plot(ns, [scale*x for x in mean(cen, key)], "s--", linewidth=2.4,
+                     markersize=9, color="tab:red", label="centralized")
+        handles = [l1, l2]
         a.set_xlabel("robots N", fontsize=16)
         a.set_ylabel(ylab, fontsize=16)
         a.set_xticks(ns)
         a.tick_params(labelsize=14)
-        a.legend(fontsize=14, frameon=False)
         if scale == 100.0:
             a.set_ylim(0, 105)
-    fig.tight_layout()
+    # one shared legend for the whole figure (not one per panel)
+    fig.legend(handles, ["distributed", "centralized"], loc="upper center",
+               ncol=2, fontsize=15, frameon=False)
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     saved = []
     for ext in ("pdf", "png"):
         p = os.path.join(figs, f"modes_compare{tag}.{ext}")
