@@ -112,7 +112,14 @@ def write_markdown(ns, dist, cen, out, tag=""):
           "tolerance** -- no single point of failure (the coordinator-kill test), and (ii) **very-"
           "large-N scaling**, where the central node finally saturates (the simulation regime, far "
           "beyond one workstation). This emulation, capped at modest N, shows service-metric parity "
-          "and exposes a control-plane cost in the current distributed implementation."]
+          "and exposes a control-plane cost in the current distributed implementation.",
+          "- **Baseline caveat -- the centralized arm is a _single_ coordinator, the _idealized_ best "
+          "case.** One coordinator has the minimum possible coordination latency (no "
+          "replication/consensus overhead) and is a single point of failure. A production centralized "
+          "coordinator (ZooKeeper/etcd/Chubby-style) would replicate via consensus (Raft/ZAB), "
+          "_adding_ latency. So this pits distributed against the _most favorable_ centralized case; a "
+          "realistically replicated coordinator would only widen the distributed architecture's "
+          "relative standing."]
     with open(path, "w") as f:
         f.write("\n".join(L) + "\n")
     return path

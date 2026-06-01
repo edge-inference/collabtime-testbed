@@ -1,6 +1,6 @@
 # Context-Fabric testbed results
 
-Quantitative validation of the federated coordination architecture, emulating **one Lingua Franca federate per robot** in Docker. Tasks arrive as a Poisson stream; the robot **policy is a state machine**. Values below are **mean ± sd over 3 seeds** (1, 7, 42).
+**Centralized baseline** for the central-vs-distributed comparison: **one shared Lingua Franca coordinator serves the whole fleet** (no inter-robot gossip, per thesis Ch.3) -- vs the distributed arm's one federate-replica per robot. Same robots, workload and `Coordinator` code in both; topology is the only variable. Tasks arrive as a Poisson stream; the robot **policy is a state machine**. Values below are **mean ± sd over 3 seeds** (1, 7, 42).
 
 ## Metric definitions (match the thesis simulation)
 - **Completion rate** = completed / created   - **Throughput** = completed / wall-second
@@ -18,6 +18,7 @@ Quantitative validation of the federated coordination architecture, emulating **
 ## What the data shows
 - **Coordination stays cheap through N=8**: completion 100%, claim overhead 4.5->4.4 ms, AoI <= 0.0 ms (<< 300 ms gossip period) -- all far below the ~75 s task service time.
 - **Latency bounded** in this range (avg 82-97 s); throughput grows with the fleet.
+- **Baseline framing -- this is a _single_ coordinator, the idealized best case for centralized.** One coordinator has the minimum possible coordination latency (no replication/consensus overhead) and is a single point of failure. A production centralized coordinator (ZooKeeper/etcd/Chubby-style) would replicate via consensus (Raft/ZAB), _adding_ latency. So these numbers are the **most favorable** for centralized; a realistically replicated coordinator would only widen the distributed architecture's relative standing.
 
 ## Artifacts
 - `results/testbed_metrics.csv` (per-seed) and `results/testbed_metrics_agg.csv` (per-N mean/sd)
