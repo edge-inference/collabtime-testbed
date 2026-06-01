@@ -47,13 +47,19 @@ class AgentNode(Node):
         self.resource_wait_max = 50  # Max ticks to wait (~5 seconds at 100ms)
         self.clearing_from_work_node = False  # Flag for post-work clearing
         
+        # Gossip (DSM path-intent sharing) is the distributed data plane; the
+        # centralized baseline (thesis Ch.3) runs with NO inter-robot gossip.
+        self.declare_parameter('use_gossip', True)
+        self.use_gossip = self.get_parameter('use_gossip').value
+
         # Publishers
         self.state_pub = self.create_publisher(AgentState, 'agent_state', 10)
-        self.dsm_pub = self.create_publisher(DSMUpdate, 'dsm_gossip', 10)
-        
+        self.dsm_pub = self.create_publisher(DSMUpdate, 'dsm_gossip', 10) if self.use_gossip else None
+
         # Subscribers
-        self.dsm_sub = self.create_subscription(DSMUpdate, 'dsm_gossip', self.handle_dsm_update, 10)
-        self.other_agent_intents = {} # AgentID -> {'path': [], 'timestamp': ms}
+        if self.use_gossip:
+            self.dsm_sub = self.create_subscription(DSMUpdate, 'dsm_gossip', self.handle_dsm_update, 10)
+        self.other_agent_intents = {}  # stays empty when gossip off -> independent path planning
         
         # Service clients (LF Coordinator) - use relative paths for namespacing
         self.claim_client = self.create_client(ClaimTask, 'coord/claim_task')
@@ -261,7 +267,9 @@ class AgentNode(Node):
             self.state = "IDLE"
 
     def publish_path_intent(self):
-        """Publish current future path to DSM."""
+        """Publish current future path to DSM (no-op when gossip is disabled)."""
+        if not self.use_gossip:
+            return
         msg = DSMUpdate()
         msg.source_agent_id = self.agent_id
         msg.layer_name = "path_intent"

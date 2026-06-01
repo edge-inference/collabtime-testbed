@@ -15,6 +15,7 @@ LF_FED_HOST="${LF_FED_HOST:-localhost}"
 # LF_FED_PORT (set by the centralized compose) points every robot at ONE shared
 # federate; unset -> per-robot federate port 9000+device_id (distributed).
 LF_PORT="${LF_FED_PORT:-$((9000 + DEVICE_ID))}"
+USE_GOSSIP="${USE_GOSSIP:-true}"   # centralized baseline (Ch.3) sets false -> no DSM gossip
 
 echo "=== Robot $DEVICE_ID ROS stack (federate at ${LF_FED_HOST}:${LF_PORT}) ==="
 source /ros2_ws/install/setup.bash
@@ -36,11 +37,16 @@ lf_bridge_node --ros-args \
 BRIDGE_PID=$!
 sleep 2
 
-echo "[robot $DEVICE_ID] starting DSM node..."
-dsm_node --ros-args \
-    -r __ns:=/robot_"$DEVICE_ID" -r __node:=dsm_node \
-    -p device_id:="$DEVICE_ID" -r dsm_gossip:=/dsm_gossip &
-DSM_PID=$!
+DSM_PID=""
+if [ "$USE_GOSSIP" = "true" ]; then
+    echo "[robot $DEVICE_ID] starting DSM node..."
+    dsm_node --ros-args \
+        -r __ns:=/robot_"$DEVICE_ID" -r __node:=dsm_node \
+        -p device_id:="$DEVICE_ID" -r dsm_gossip:=/dsm_gossip &
+    DSM_PID=$!
+else
+    echo "[robot $DEVICE_ID] gossip disabled (centralized) -- no DSM node"
+fi
 
 echo "[robot $DEVICE_ID] starting agent node..."
 agent_node --ros-args \
@@ -48,9 +54,10 @@ agent_node --ros-args \
     -p agent_id:="$DEVICE_ID" -p device_id:="$DEVICE_ID" \
     -p start_node:="$START_NODE" \
     -p step_time_s:="$STEP_TIME_S" -p work_time_s:="$WORK_TIME_S" \
+    -p use_gossip:="$USE_GOSSIP" \
     -r agent_state:=/agent_state -r dsm_gossip:=/dsm_gossip &
 AGENT_PID=$!
 
 wait -n
 echo "[robot $DEVICE_ID] a process exited; shutting down."
-kill "$BRIDGE_PID" "$DSM_PID" "$AGENT_PID" 2>/dev/null || true
+kill "$BRIDGE_PID" "$AGENT_PID" $DSM_PID 2>/dev/null || true

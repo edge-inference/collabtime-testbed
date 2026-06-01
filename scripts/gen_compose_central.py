@@ -59,7 +59,8 @@ def build(cfg, n):
             "cap_add": ["NET_ADMIN"],
             # Every robot targets the ONE central federate (vs federate__f{i}).
             "environment": {**ros_env(cfg),
-                            "LF_FED_HOST": CENTRAL_FED, "LF_FED_PORT": CENTRAL_PORT},
+                            "LF_FED_HOST": CENTRAL_FED, "LF_FED_PORT": CENTRAL_PORT,
+                            "USE_GOSSIP": "false"},   # centralized (Ch.3): no inter-robot gossip
             "command": ["/ros2_ws/scripts/start_robot_ros.sh", str(i), str(i - 1),
                         str(timing["step_time_s"]), str(timing["work_time_s"])],
             "volumes": vols,

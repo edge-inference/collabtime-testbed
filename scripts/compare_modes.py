@@ -56,13 +56,13 @@ def write_markdown(ns, dist, cen, out, tag=""):
          "(replica) per robot + gossip; **centralized** = one shared federate serving the "
          "whole fleet. Values are mean ± sd across seeds.", "",
          "## Per-N, both modes", "",
-         "| N | mode | Completion | Throughput (tps) | Avg lat (s) | Util | "
+         "| N | mode | Completion | Throughput (tasks/min) | Avg lat (s) | Util | "
          "T_claim (ms) | AoI (ms) |",
          "|---|---|---|---|---|---|---|---|"]
 
     def row(n, label, s):
         return (f"| {n} | {label} | {pm(s['completion_rate_mean'], s['completion_rate_sd'])} | "
-                f"{pm(s['throughput_tps_mean'], s['throughput_tps_sd'], 3)} | "
+                f"{pm(60*s['throughput_tps_mean'], 60*s['throughput_tps_sd'], 2)} | "
                 f"{pm(s['avg_latency_s_mean'], s['avg_latency_s_sd'], 0)} | "
                 f"{pm(s['agent_utilization_mean'], s['agent_utilization_sd'])} | "
                 f"{pm(s['t_claim_ms_mean_mean'], s['t_claim_ms_mean_sd'], 1)} | "
@@ -171,7 +171,7 @@ def make_figure(ns, dist, cen, figs, tag=""):
     # Metric goes in the y-axis label; no titles, no grid, no error bars.
     panels = [
         (ax[0, 0], "completion_rate", "Completion rate (%)", 100.0),
-        (ax[0, 1], "throughput_tps", "Throughput (tasks/s)", 1.0),
+        (ax[0, 1], "throughput_tps", "Throughput (tasks/min)", 60.0),
         (ax[1, 0], "avg_latency_s", "Task latency (s)", 1.0),
         (ax[1, 1], "agent_utilization", "Utilization (% working)", 100.0),
     ]
