@@ -1,6 +1,6 @@
 // Context-Fabric testbed — system architecture (thesis figure).
 // Each robot (ROS app + coordination-microservice federate) is a bounded box;
-// both are separate containers with their own IP on the Docker bridge "lf".
+// both are separate containers with their own IP on the robot network.
 // Layers: robot apps (top) -> federates (middle) -> RTI (bottom).
 // Render:  dot -Tpng architecture_system.dot -o architecture_system.png
 digraph testbed {
@@ -39,8 +39,8 @@ digraph testbed {
     f1 -> rti [color="#1565c0"];
     f2 -> rti [color="#1565c0"];
     fN -> rti [color="#1565c0"];
-    f1 -> f2 [dir=both, style=dashed, color="#64b5f6", constraint=false];
-    f2 -> fN [dir=both, style=dashed, color="#64b5f6", constraint=false];
+    f1 -> f2 [dir=both, style=dashed, color="#D55E00", constraint=false];
+    f2 -> fN [dir=both, style=dashed, color="#D55E00", constraint=false];
     a1 -> a2 [dir=both, style=dashed, color="#66bb6a", constraint=false];
     a2 -> aN [dir=both, style=dashed, color="#66bb6a", constraint=false];
   }
@@ -49,9 +49,9 @@ digraph testbed {
     <table border="0" cellborder="0" cellspacing="6">
       <tr>
         <td align="left"><font color="#1565c0">&#8212;&#8212; control plane (app &#8594; federate &#8594; RTI)</font></td>
-        <td align="left"><font color="#1565c0">- - proposal mesh</font></td>
+        <td align="left"><font color="#D55E00">- - peer proposal exchange</font></td>
         <td align="left"><font color="#2e7d32">- - DDS gossip</font></td>
-        <td align="left"><font color="#78909c">Docker net &#183; 1 IP / container</font></td>
+        <td align="left"><font color="#546e7a">Robot network</font></td>
       </tr>
     </table>>];
   rti -> legend [style=invis];
