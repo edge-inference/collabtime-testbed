@@ -1,0 +1,103 @@
+<mxfile host="app.diagrams.net" modified="2025-12-15T00:00:00.000Z" agent="5.0" version="21.0.0" etag="context-table" type="device">
+  <diagram name="Data Types Table" id="data-types-table">
+    <mxGraphModel dx="1434" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="table-title" value="&lt;font style=&quot;font-size: 18px;&quot;&gt;&lt;b&gt;Context-Fabric Knowledge Domains&lt;/b&gt;&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="500" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="header-datatype" value="&lt;b style=&quot;font-size: 25px;&quot;&gt;Knowledge Domain&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=25;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="header-objects" value="&lt;b style=&quot;font-size: 25px;&quot;&gt;Data objects&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=25;" vertex="1" parent="1">
+          <mxGeometry x="320" y="100" width="360" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="header-why" value="&lt;b style=&quot;font-size: 25px;&quot;&gt;Why It Matters&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=25;" vertex="1" parent="1">
+          <mxGeometry x="680" y="100" width="440" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row1-type" value="My history" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="160" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row1-objects" value="recent_actions, recent_observations" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="320" y="160" width="360" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row1-why" value="&quot;What did I just do?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="680" y="160" width="440" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row2-type" value="Objects" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="230" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row2-objects" value="id, type, location" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="320" y="230" width="360" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row2-why" value="&quot;Where are the bins/pallets?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="680" y="230" width="440" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row3-type" value="Spatial &amp; Traffic" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="300" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row3-objects" value="id, jam_signal, blocked_until, flow_traces" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="320" y="300" width="360" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row3-why" value="&quot;Is my path clear?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="680" y="300" width="440" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row4-type" value="Perception + Sensing" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="370" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row4-objects" value="id, occupancy_grid, obstacles, local_map" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="320" y="370" width="360" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row4-why" value="&quot;What do I see around me?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="680" y="370" width="440" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row5-type" value="Neighbor states" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="440" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row5-objects" value="id, x, y, theta, intent, task" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="320" y="440" width="360" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row5-why" value="&quot;Who is near me? What are they doing?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="680" y="440" width="440" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row6-type" value="Task pool" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="100" y="510" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row6-objects" value="id, location, status, priority" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="320" y="510" width="360" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="row6-why" value="&quot;What work is available?&quot;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;align=left;verticalAlign=middle;fontSize=25;spacingLeft=10;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="680" y="510" width="440" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="&lt;b&gt;Legend:&lt;/b&gt; All data is processed/semantic. Raw sensors (camera, LiDAR) stay local. DSM shares with eventual consistency via P2P gossip." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;align=left;verticalAlign=middle;fontSize=20;spacingLeft=10;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="620" width="1020" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

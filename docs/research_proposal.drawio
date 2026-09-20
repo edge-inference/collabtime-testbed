@@ -1,0 +1,301 @@
+<mxfile host="app.diagrams.net" modified="2025-12-15T00:00:00.000Z" agent="5.0" version="24.0.0">
+  <diagram name="Architecture" id="arch">
+    <mxGraphModel dx="1434" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Physical AI System Architectures" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=26;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="500" y="20" width="600" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- CURRENT ARCHITECTURE -->
+        <mxCell id="current_label" value="Current: Centralized Topology" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="100" y="80" width="600" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Sensors (Current) -->
+        <mxCell id="sensor1" value="Sensor 1&#xa;(Camera)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="120" y="160" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sensor2" value="Sensor 2&#xa;(LiDAR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="120" y="240" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sensor3" value="Sensor 3&#xa;(Radar)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="120" y="320" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="sensor4" value="Sensor 4&#xa;(IMU)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="120" y="400" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Raw data arrows -->
+        <mxCell id="arrow1" value="Raw Data&#xa;(High BW)" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#d6b656;fontSize=12;fontColor=#d6b656;fontStyle=1" edge="1" parent="1" source="sensor1" target="central_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="190" as="sourcePoint" />
+            <mxPoint x="450" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow2" value="Raw Data&#xa;(High BW)" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#d6b656;fontSize=12;fontColor=#d6b656;fontStyle=1" edge="1" parent="1" source="sensor2" target="central_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="270" as="sourcePoint" />
+            <mxPoint x="450" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow3" value="Raw Data&#xa;(High BW)" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#d6b656;fontSize=12;fontColor=#d6b656;fontStyle=1" edge="1" parent="1" source="sensor3" target="central_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="350" as="sourcePoint" />
+            <mxPoint x="450" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow4" value="Raw Data&#xa;(High BW)" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#d6b656;fontSize=12;fontColor=#d6b656;fontStyle=1" edge="1" parent="1" source="sensor4" target="central_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="430" as="sourcePoint" />
+            <mxPoint x="450" y="300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Central CPU -->
+        <mxCell id="central_cpu" value="Central Compute&#xa;(GPU/CPU)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=3;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="260" width="140" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Processing stages inside CPU -->
+        <mxCell id="cpu_stages" value="1. Post-process&#xa;2. Feature extract&#xa;3. Inference" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="460" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Output -->
+        <mxCell id="output1" value="Decision" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="640" y="280" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_out1" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#82b366;" edge="1" parent="1" source="central_cpu" target="output1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="590" y="310" as="sourcePoint" />
+            <mxPoint x="640" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Problems annotation -->
+        <mxCell id="problem_box1" value="⚠ High Latency&#xa;⚠ High Power&#xa;⚠ Bandwidth Bottleneck" style="text;html=1;strokeColor=#b85450;fillColor=#f8cecc;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="390" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- PROPOSED ARCHITECTURE 1 -->
+        <mxCell id="proposed1_label" value="Proposed 1: Distributed Compute (AISP Framework)" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="850" y="80" width="650" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Smart Sensors with compute -->
+        <mxCell id="smart_sensor1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=3;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="870" y="160" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ss1_sensor" value="Camera" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="170" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ss1_compute" value="Edge CPU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="205" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ss1_process" value="Preprocess&#xa;Filter" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="960" y="170" width="80" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="smart_sensor2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=3;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="870" y="260" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ss2_sensor" value="LiDAR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="270" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ss2_compute" value="Edge CPU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="305" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ss2_process" value="Cluster&#xa;Segment" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="960" y="270" width="80" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="smart_sensor3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;strokeWidth=3;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="870" y="360" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ss3_sensor" value="Radar" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="370" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ss3_compute" value="Edge CPU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="405" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ss3_process" value="FFT&#xa;Track" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="960" y="370" width="80" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Reduced data to host -->
+        <mxCell id="host_cpu" value="Host Compute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1130" y="260" width="140" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="host_stages" value="Global fusion&#xa;High-level inference&#xa;Planning" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_s1" value="Features&#xa;(Low BW)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#6c8ebf;fontSize=11;fontColor=#6c8ebf;fontStyle=1" edge="1" parent="1" source="smart_sensor1" target="host_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1050" y="200" as="sourcePoint" />
+            <mxPoint x="1130" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow_s2" value="Features&#xa;(Low BW)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#6c8ebf;fontSize=11;fontColor=#6c8ebf;fontStyle=1" edge="1" parent="1" source="smart_sensor2" target="host_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1050" y="300" as="sourcePoint" />
+            <mxPoint x="1130" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow_s3" value="Features&#xa;(Low BW)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#6c8ebf;fontSize=11;fontColor=#6c8ebf;fontStyle=1" edge="1" parent="1" source="smart_sensor3" target="host_cpu">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1050" y="400" as="sourcePoint" />
+            <mxPoint x="1130" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="output2" value="Decision" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="280" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_out2" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#82b366;" edge="1" parent="1" source="host_cpu" target="output2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1270" y="310" as="sourcePoint" />
+            <mxPoint x="1320" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Benefits -->
+        <mxCell id="benefit_box1" value="✓ Lower latency&#xa;✓ Reduced bandwidth&#xa;✓ Optimized via AISP model" style="text;html=1;strokeColor=#82b366;fillColor=#d5e8d4;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1130" y="390" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- PROPOSED ARCHITECTURE 2 -->
+        <mxCell id="proposed2_label" value="Proposed 2: Data Quantization" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="100" y="520" width="600" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Sensor with quantization -->
+        <mxCell id="quant_sensor" value="Sensor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="120" y="600" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Quantizer -->
+        <mxCell id="quantizer" value="Quantizer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="280" y="600" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="quant_detail" value="8bit → 4bit&#xa;Compress&#xa;Encode" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="290" y="610" width="80" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_q1" value="Full Data&#xa;(1 MB)" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#d6b656;fontSize=11;fontColor=#d6b656;fontStyle=1" edge="1" parent="1" source="quant_sensor" target="quantizer">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="220" y="630" as="sourcePoint" />
+            <mxPoint x="280" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Transmission -->
+        <mxCell id="transmission" value="Transmission" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;fontSize=14;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="440" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_q2" value="Compressed&#xa;(128 KB)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#9673a6;fontSize=11;fontColor=#9673a6;fontStyle=1" edge="1" parent="1" source="quantizer" target="transmission">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="630" as="sourcePoint" />
+            <mxPoint x="440" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Decoder -->
+        <mxCell id="decoder" value="Decoder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="620" y="600" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_q3" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#9673a6;" edge="1" parent="1" source="transmission" target="decoder">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="560" y="630" as="sourcePoint" />
+            <mxPoint x="620" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Processing -->
+        <mxCell id="algo" value="Algorithm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="780" y="600" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_q4" value="Reconstructed" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#82b366;fontSize=11;fontColor=#82b366;" edge="1" parent="1" source="decoder" target="algo">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="720" y="630" as="sourcePoint" />
+            <mxPoint x="780" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Metrics -->
+        <mxCell id="metrics_box" value="8x Bandwidth Reduction&#xa;↓ Latency: 100ms → 12ms&#xa;↓ Energy: 5W → 0.6W&#xa;Accuracy: 98% → 96%" style="text;html=1;strokeColor=#9673a6;fillColor=#e1d5e7;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="690" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- COMBINED APPROACH -->
+        <mxCell id="combined_label" value="Combined: Distributed + Quantized" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="850" y="520" width="650" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Smart sensor with quantization -->
+        <mxCell id="combined_sensor" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b1ddf0;strokeColor=#10739e;strokeWidth=3;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="870" y="590" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="cs_sensor" value="Sensor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="600" width="70" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="cs_compute" value="Process" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="960" y="600" width="70" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="cs_quant" value="Quantize" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="600" width="60" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="cs_arrow1" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#10739e;" edge="1" parent="1" source="cs_sensor" target="cs_compute">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="950" y="617" as="sourcePoint" />
+            <mxPoint x="960" y="617" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cs_arrow2" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#10739e;" edge="1" parent="1" source="cs_compute" target="cs_quant">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1030" y="617" as="sourcePoint" />
+            <mxPoint x="1040" y="617" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cs_label" value="Features + Compressed" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="880" y="650" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="combined_host" value="Host&#xa;(Minimal Data)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=3;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="1180" y="620" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_combined" value="Ultra-low BW" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#10739e;fontSize=11;fontColor=#10739e;fontStyle=1" edge="1" parent="1" source="combined_sensor" target="combined_host">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1110" y="650" as="sourcePoint" />
+            <mxPoint x="1180" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="combined_output" value="Decision" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="620" width="100" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow_combined_out" value="" style="endArrow=classic;html=1;strokeWidth=3;strokeColor=#82b366;" edge="1" parent="1" source="combined_host" target="combined_output">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1300" y="650" as="sourcePoint" />
+            <mxPoint x="1360" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Final metrics -->
+        <mxCell id="final_metrics" value="Best of Both Worlds:&#xa;✓ Minimal latency (on-sensor compute)&#xa;✓ Minimal bandwidth (quantization)&#xa;✓ Minimal power consumption&#xa;✓ Scalable to 100+ sensors" style="text;html=1;strokeColor=#10739e;fillColor=#b1ddf0;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=13;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="870" y="740" width="280" height="100" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

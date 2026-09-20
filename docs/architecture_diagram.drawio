@@ -5,169 +5,169 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        
+
         <!-- Central Infrastructure -->
         <mxCell id="cloud" value="&lt;b&gt;Central Infrastructure (x86 Host)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontSize=14;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
           <mxGeometry x="600" y="40" width="400" height="160" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="rti" value="&lt;b&gt;RTI&lt;/b&gt;&lt;br&gt;(Runtime Infrastructure)&lt;br&gt;&lt;i&gt;Logical Time Coordinator&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="640" y="80" width="160" height="80" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="metrics" value="&lt;b&gt;Metrics Service&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
           <mxGeometry x="820" y="80" width="160" height="80" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 1 Container -->
         <mxCell id="robot1_container" value="&lt;b&gt;Robot 1 (Jetson Orin / Edge Device)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#d79b00;verticalAlign=top;fontSize=14;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="80" y="280" width="680" height="460" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 1 Control Plane -->
         <mxCell id="r1_control" value="&lt;b&gt;Control Plane (Strong Consistency)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;verticalAlign=top;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="100" y="320" width="280" height="180" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r1_fed" value="&lt;b&gt;LF Coordinator&lt;br&gt;Federate (Fed1)&lt;/b&gt;&lt;br&gt;&lt;i&gt;Replicated State Machine&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="120" y="360" width="240" height="60" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r1_task" value="Task Registry" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="130" y="440" width="100" height="50" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r1_lease" value="Lease Manager" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="250" y="440" width="100" height="50" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 1 Bridge -->
         <mxCell id="r1_bridge" value="&lt;b&gt;Bridge Layer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;verticalAlign=top;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="100" y="520" width="280" height="100" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r1_bridge_node" value="&lt;b&gt;LF Bridge Node&lt;/b&gt;&lt;br&gt;&lt;i&gt;TCP ↔ ROS Adapter&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#e65100;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="120" y="555" width="240" height="50" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 1 Data Plane -->
         <mxCell id="r1_data" value="&lt;b&gt;Data Plane (Eventual Consistency)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="400" y="320" width="340" height="300" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r1_agent" value="&lt;b&gt;Agent Node&lt;/b&gt;&lt;br&gt;&lt;i&gt;State Machine Logic&lt;br&gt;Navigation Controller&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c7e5c0;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="420" y="360" width="300" height="80" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r1_dsm" value="&lt;b&gt;DSM Node&lt;/b&gt;&lt;br&gt;&lt;i&gt;Gossip Protocol&lt;br&gt;CRDT Cache&lt;/i&gt;&lt;br&gt;&lt;br&gt;• Flow Traces&lt;br&gt;• Jam Signals&lt;br&gt;• Path Intents" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c7e5c0;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="420" y="460" width="300" height="145" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 2 Container -->
         <mxCell id="robot2_container" value="&lt;b&gt;Robot 2 (Coral Dev Board / Edge Device)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff4e6;strokeColor=#d79b00;verticalAlign=top;fontSize=14;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="840" y="280" width="680" height="460" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 2 Control Plane -->
         <mxCell id="r2_control" value="&lt;b&gt;Control Plane (Strong Consistency)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;verticalAlign=top;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="1220" y="320" width="280" height="180" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r2_fed" value="&lt;b&gt;LF Coordinator&lt;br&gt;Federate (Fed2)&lt;/b&gt;&lt;br&gt;&lt;i&gt;Replicated State Machine&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1240" y="360" width="240" height="60" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r2_task" value="Task Registry" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1250" y="440" width="100" height="50" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r2_lease" value="Lease Manager" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#b3e5fc;strokeColor=#01579b;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="1370" y="440" width="100" height="50" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 2 Bridge -->
         <mxCell id="r2_bridge" value="&lt;b&gt;Bridge Layer&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;verticalAlign=top;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="1220" y="520" width="280" height="100" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r2_bridge_node" value="&lt;b&gt;LF Bridge Node&lt;/b&gt;&lt;br&gt;&lt;i&gt;TCP ↔ ROS Adapter&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe0b2;strokeColor=#e65100;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="1240" y="555" width="240" height="50" as="geometry" />
         </mxCell>
-        
+
         <!-- Robot 2 Data Plane -->
         <mxCell id="r2_data" value="&lt;b&gt;Data Plane (Eventual Consistency)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;fontSize=12;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="860" y="320" width="340" height="300" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r2_agent" value="&lt;b&gt;Agent Node&lt;/b&gt;&lt;br&gt;&lt;i&gt;State Machine Logic&lt;br&gt;Navigation Controller&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c7e5c0;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
           <mxGeometry x="880" y="360" width="300" height="80" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="r2_dsm" value="&lt;b&gt;DSM Node&lt;/b&gt;&lt;br&gt;&lt;i&gt;Gossip Protocol&lt;br&gt;CRDT Cache&lt;/i&gt;&lt;br&gt;&lt;br&gt;• Flow Traces&lt;br&gt;• Jam Signals&lt;br&gt;• Path Intents" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c7e5c0;strokeColor=#82b366;fontSize=10;align=left;spacingLeft=10;" vertex="1" parent="1">
           <mxGeometry x="880" y="460" width="300" height="145" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: RTI to Federates -->
         <mxCell id="conn_rti_fed1" value="&lt;b&gt;Coordination Events&lt;/b&gt;&lt;br&gt;(Logical Time)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1976d2;fontSize=10;fontColor=#1976d2;startArrow=classic;startFill=1;" edge="1" parent="1" source="rti" target="r1_fed">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="conn_rti_fed2" value="&lt;b&gt;Coordination Events&lt;/b&gt;&lt;br&gt;(Logical Time)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1976d2;fontSize=10;fontColor=#1976d2;startArrow=classic;startFill=1;" edge="1" parent="1" source="rti" target="r2_fed">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Gossip between DSMs -->
         <mxCell id="conn_dsm_gossip" value="&lt;b&gt;DSM Gossip&lt;/b&gt;&lt;br&gt;(DDS Topics)&lt;br&gt;Eventual Consistency" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;dashed=1;dashPattern=8 8;fontSize=10;fontColor=#82b366;startArrow=classic;startFill=1;" edge="1" parent="1" source="r1_dsm" target="r2_dsm">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Agent -> Bridge (Robot 1) -->
         <mxCell id="conn_r1_agent_bridge" value="ROS Service Call" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#e65100;fontSize=10;fontColor=#e65100;" edge="1" parent="1" source="r1_agent" target="r1_bridge_node">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Bridge -> Federate (Robot 1) -->
         <mxCell id="conn_r1_bridge_fed" value="TCP/JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#e65100;fontSize=10;fontColor=#e65100;startArrow=classic;startFill=1;" edge="1" parent="1" source="r1_bridge_node" target="r1_fed">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Agent <-> DSM (Robot 1) -->
         <mxCell id="conn_r1_agent_dsm" value="Query Context" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#82b366;fontSize=9;fontColor=#82b366;startArrow=classic;startFill=1;dashed=1;" edge="1" parent="1" source="r1_agent" target="r1_dsm">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Agent -> Bridge (Robot 2) -->
         <mxCell id="conn_r2_agent_bridge" value="ROS Service Call" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#e65100;fontSize=10;fontColor=#e65100;" edge="1" parent="1" source="r2_agent" target="r2_bridge_node">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Bridge -> Federate (Robot 2) -->
         <mxCell id="conn_r2_bridge_fed" value="TCP/JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#e65100;fontSize=10;fontColor=#e65100;startArrow=classic;startFill=1;" edge="1" parent="1" source="r2_bridge_node" target="r2_fed">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Connections: Agent <-> DSM (Robot 2) -->
         <mxCell id="conn_r2_agent_dsm" value="Query Context" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#82b366;fontSize=9;fontColor=#82b366;startArrow=classic;startFill=1;dashed=1;" edge="1" parent="1" source="r2_agent" target="r2_dsm">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+
         <!-- Legend -->
         <mxCell id="legend" value="&lt;b&gt;Legend&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#000000;verticalAlign=top;fontSize=12;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="80" y="800" width="400" height="140" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="legend_control" value="Control Plane (Strong Consistency via LF)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#01579b;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="100" y="830" width="180" height="30" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="legend_data" value="Data Plane (Eventual Consistency)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="100" y="870" width="180" height="30" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="legend_bridge" value="Bridge Layer (ROS ↔ LF)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="100" y="910" width="180" height="30" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="legend_coord" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1976d2;fontSize=10;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="300" y="845" as="sourcePoint" />
@@ -177,7 +177,7 @@
         <mxCell id="legend_coord_text" value="LF Coordination" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="370" y="835" width="100" height="20" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="legend_gossip" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;dashed=1;dashPattern=8 8;fontSize=10;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="300" y="885" as="sourcePoint" />
@@ -187,7 +187,7 @@
         <mxCell id="legend_gossip_text" value="DDS Gossip" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="370" y="875" width="100" height="20" as="geometry" />
         </mxCell>
-        
+
         <mxCell id="legend_ros" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#e65100;fontSize=10;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="300" y="925" as="sourcePoint" />
@@ -197,9 +197,8 @@
         <mxCell id="legend_ros_text" value="ROS/TCP Bridge" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" vertex="1" parent="1">
           <mxGeometry x="370" y="915" width="100" height="20" as="geometry" />
         </mxCell>
-        
+
       </root>
     </mxGraphModel>
   </diagram>
 </mxfile>
-
